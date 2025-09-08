@@ -1,4 +1,6 @@
 # luluorange🍊
+Link to project: https://rasyad-zulham-luluorange.pbp.cs.ui.ac.id/
+
 ## Step by step implementasi checklist✅
 
 ### Inisiasi
@@ -186,3 +188,22 @@
 File settings.py sering disebut juga dengan jantung dari proyek Django. Settings.py berperan sebagai pusat penghubung untuk setting Django yang berisi semua konfigurasi dari instalasi Django serta mengontrol banyak aspek seperti konfigurasi database, installed application, konfigurasi URL, static file directories, dan masih banyak lagi. 
 
 Source: https://dev.to/rupesh_mishra/understanding-djangos-settingspy-file-a-comprehensive-guide-for-beginners-35e2#:~:text=The%20settings.py%20file%20is,file%20directories%2C%20and%20much%20more.
+
+## Cara kerja migrasi database di Django
+Migrasi database di Django adalah mekanisme untuk menjaga skema database (tabel, kolom, relasi, constraint) tetap sinkron dengan model Python yang telah didefinisikan pada file models.py. Django tidak langsung mengubah database ketika mengubah models.py. Oleh karena itu, jalankan command
+~~~
+python manage.py makemigrations
+~~~
+Dengan ini, Django akan membaca perubahan pada model, lalu membuat file migrasi di folder migrations/.
+File migrasi berisi instruksi Python untuk membentuk atau mengubah tabel di database.
+Untuk menerapkan perubahan ke database, jalankan command
+~~~
+python manage.py migrate
+~~~
+Django akan membaca semua file migrasi yang belum pernah dijalankan, lalu mengeksekusi SQL akan dijalankan hingga pada akhirnya database sekarang sinkron dengan model.
+
+## Mengapa framework Django dijadikan permulaan pembelajaran pengembangan perangkat lunak?
+Untuk menguasai sebuah framework, kita harus memiliki landasan kuat dalam bahasa pemrograman yang digunakan oleh framework tersebut. Django adalah framework berbasis Python, Python merupakan bahasa pemrograman pengantar pada mata kuliah DDP-1, sehingga saya sudah terbiasa dengan sintaksnya yang akan membuat proses pembelajaran akan lebih mudah. Dari beberapa sumber yang saya baca, Django adalah framework web tingkat tinggi yang menyediakan banyak fitur bawaan, sehingga memungkinkan kita untuk membangun aplikasi dengan cepat. Django juga memiliki dokumentasi yang sangat baik dan kuat dengan komunitas yang aktif, sehingga mudah untuk belajar dan mendapatkan bantuan jika diperlukan.
+
+## Feedback untuk asisten dosen di tutorial 1
+Overall tutorialnya sangat jelas dan detail, saya bisa mengikutinya dengan baik. Jika ada kesulitan, asisten dosen pun dengan sigap membantu menyelesaikan problem. 
