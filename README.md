@@ -151,9 +151,13 @@ Link to project: https://rasyad-zulham-luluorange.pbp.cs.ui.ac.id/
 
 11. Untuk mengonfigurasi routing URL aplikasi main, buat urls.py pada aplikasi main dan mengisinya dengan URL pattern yang kita kehendaki
     ~~~
+    from django.urls import path
+    from main.views import show_main
+      
+    app_name = 'main'
+      
     urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('main.urls')),
+       path('', show_main, name='show_main'),
     ]
     ~~~
 12. Untuk mengonfigurasi routing URL proyek, buka urls.py pada direktori proyek dan mengisinya dengan URL pattern yang kita kehendaki (Menggunakan include('main.urls') untuk mengimpor pola rute URL dari aplikasi main ke dalam berkas urls.py level proyek)
@@ -192,13 +196,13 @@ Source: https://dev.to/rupesh_mishra/understanding-djangos-settingspy-file-a-com
 ## Cara kerja migrasi database di Django
 Migrasi database di Django adalah mekanisme untuk menjaga skema database (tabel, kolom, relasi, constraint) tetap sinkron dengan model Python yang telah didefinisikan pada file models.py. Django tidak langsung mengubah database ketika mengubah models.py. Oleh karena itu, jalankan command
 ~~~
-python manage.py makemigrations
+python3 manage.py makemigrations
 ~~~
 Dengan ini, Django akan membaca perubahan pada model, lalu membuat file migrasi di folder migrations/.
 File migrasi berisi instruksi Python untuk membentuk atau mengubah tabel di database.
 Untuk menerapkan perubahan ke database, jalankan command
 ~~~
-python manage.py migrate
+python3 manage.py migrate
 ~~~
 Django akan membaca semua file migrasi yang belum pernah dijalankan, lalu mengeksekusi SQL akan dijalankan hingga pada akhirnya database sekarang sinkron dengan model.
 
