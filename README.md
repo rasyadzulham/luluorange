@@ -145,6 +145,8 @@ Link to project: https://rasyad-zulham-luluorange.pbp.cs.ui.ac.id/
     <p>{{ name }}</p> 
     <h4>NPM: </h4>
     <p>{{ npm }}</p>
+    <h4>Class: </h4>
+    <p>{{ class }}</p>
     ~~~
 
 ### Melakukan routing URL
@@ -174,9 +176,10 @@ Link to project: https://rasyad-zulham-luluorange.pbp.cs.ui.ac.id/
     
 ### Deployment ke PWS
 
-14. Buka PWS dan create new project, lalu copy paste isi file .env.prod ke tab environs pada project yang baru dibuat
-15. Update allowed-host pada file settings.py (menambahkan URL Deployment PWS "rasyad-zulham-luluorange.pbp.cs.ui.ac.id")
-16. Jalankan command di bawah ini lalu masukkan username serta password
+14. Buat file .gitignore untuk menentukan berkas-berkas dan direktori-direktori yang harus diabaikan oleh Git.
+15. Buka PWS dan create new project, lalu copy paste isi file .env.prod ke tab environs pada project yang baru dibuat
+16. Update allowed-host pada file settings.py (menambahkan URL Deployment PWS "rasyad-zulham-luluorange.pbp.cs.ui.ac.id")
+17. Jalankan command di bawah ini lalu masukkan username serta password
     ~~~
     git remote add pws https://pbp.cs.ui.ac.id/rasyad.zulham/luluorange
     git branch -M master
