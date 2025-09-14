@@ -1,8 +1,47 @@
-<h1>{{ app }}</h1>
+ {% extends 'base.html' %}
+ {% block content %}
+ <h1>Luluorange</h1>
 
-<h4>Name: </h4>
-<p>{{ name }}</p> <!-- Ubah sesuai dengan nama kamu -->
-<h4>NPM: </h4>
-<p>{{ npm }}</p> <!-- Ubah sesuai dengan npm kamu -->
-<h4>Class: </h4>
-<p>{{ class }}</p> <!-- Ubah sesuai dengan npm kamu -->
+<h5>NPM: </h5>
+<p>{{ npm }}</p>
+
+<h5>Name:</h5>
+<p>{{ name }}</p>
+
+<h5>Class:</h5>
+<p>{{ class }}</p>
+
+<a href="{% url 'main:add_product' %}">
+  <button>+ Add Product</button>
+</a>
+
+<hr>
+
+{% if not product_list %}
+<p>Belum ada product yang dijual.</p>
+{% else %}
+
+{% for product in product_list %}
+<div>
+    {% if product.thumbnail %}
+    <img src="{{ product.thumbnail }}" alt="thumbnail" width="150" height="100">
+    <br />
+    {% endif %}
+    
+  <h2><a href="{% url 'main:show_product' product.id %}">{{ product.name }}</a></h2>
+  <h3><b>Rp. {{ product.price }}</b></h3>
+
+  <p><b>{{ product.get_category_display }}
+    </b>{% if product.is_featured %} | <b>Featured</b>{% endif %}
+    {% if product.is_product_recommended %} | <b>Loved by Everyone!</b>{% endif %} | <b>Rating: {{ product.rating }}/5</b></p>
+
+    <p>{{ product.description|truncatewords:25 }}...</p>
+
+  <p><a href="{% url 'main:show_product' product.id %}"><button>See Details</button></a></p>
+</div>
+
+<hr>
+{% endfor %}
+
+{% endif %}
+{% endblock content %}
