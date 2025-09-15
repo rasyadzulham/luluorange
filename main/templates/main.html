@@ -33,7 +33,7 @@
 
   <p><b>{{ product.get_category_display }}
     </b>{% if product.is_featured %} | <b>Featured</b>{% endif %}
-    {% if product.is_product_recommended %} | <b>Loved by Everyone!</b>{% endif %} | <b>Rating: {{ product.rating }}/5</b></p>
+    {% if product.is_product_recommended %} | <b>Loved by Everyone!</b>{% endif %}</p>
 
     <p>{{ product.description|truncatewords:25 }}...</p>
 
