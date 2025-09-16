@@ -439,4 +439,18 @@ urlpatterns = [
 ]
 ```
 
+### Screenshot dari hasil akses URL pada Postman📨
+1. xml/
+<img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 38 49" src="https://github.com/user-attachments/assets/77ef71a7-c0d6-4674-bd64-3d32d87c10ca" />
+2. json/
+<img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 39 00" src="https://github.com/user-attachments/assets/1cf2656c-409c-4456-87ae-ace585323f31" />
+3. xml/<product_id>
+<img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 39 19" src="https://github.com/user-attachments/assets/9acf56b2-71d2-4f7e-b0c1-12a5e7f889e1" />
+4. json/<product_id>
+<img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 39 11" src="https://github.com/user-attachments/assets/17a2249e-dab3-4b18-a1e0-e366e04fe65a" />
+
+### Feedback untuk asisten dosen di tutorial 2
+Pada tutorial 2 dan tugas 3 ini, saya mengalami error di database. Asdos langsung menjawab pertanyaan di tutorial. FAQ di discord juga membantu menyelesaikan sebagian besar permasalahan tersebut.
+
+
 
