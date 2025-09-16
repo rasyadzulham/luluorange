@@ -451,6 +451,7 @@ Method ini akan mereturn True jika form sudah diisi (bound) dan tidak memiliki e
 CSRF terjadi ketika penyerang mencoba membuat pengguna yang sudah login di suatu website tanpa sadar mengirimkan request berbahaya (misalnya transfer uang, ubah password) melalui link atau script dari situs lain. 
 
 Contoh kasus jika tanpa csrf_token.
+source: https://stackoverflow.com/questions/5207160/what-is-a-csrf-token-what-is-its-importance-and-how-does-it-work#comment68126014_33829607
 1. Login di internet banking dan ingin transfer uang
 ```
 https://www.klikbca.com/transfer?to=<SomeAccountnumber>&amount=<SomeAmount>
