@@ -438,15 +438,43 @@ urlpatterns = [
     ...
 ]
 ```
+### Mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?📦
+Dalam pengimplementasian sebuah platform, data delivery sangat penting karena menjadi tulang punggung komunikasi antar komponen, mulai dari front-end, back-end, database, hingga integrasi dengan layanan pihak ketiga. Mekanisme ini memastikan data dapat ditransfer dengan konsisten, efisien, dan andal, sehingga setiap perubahan pada sistem segera tersampaikan ke seluruh bagian platform tanpa menimbulkan inkonsistensi. Selain itu, data delivery mendukung skalabilitas dengan menjaga performa ketika jumlah pengguna meningkat, serta memberikan reliabilitas melalui mekanisme retry dan error handling agar data tidak hilang meskipun terjadi gangguan. Dengan demikian, data delivery menjadikan platform berfungsi sebagai sebuah sistem yang utuh, bukan sekadar kumpulan modul terpisah.
+
+### XML vs JSON
+Menurut saya, JSON lebih unggul karena lebih simpel, fleksibel, dan cepat dibandingkan dengan XML. JSON lebih populer dibandingkan XML karena sifatnya yang lebih ringan, sederhana, dan mudah dibaca baik oleh manusia maupun mesin. JSON tidak menggunakan banyak tag seperti XML sehingga ukuran datanya lebih kecil dan proses parsing lebih cepat, membuatnya sangat efisien untuk kebutuhan komunikasi data di web modern, aplikasi mobile, serta layanan API seperti REST dan GraphQL. Selain itu, hampir semua bahasa pemrograman menyediakan dukungan bawaan atau pustaka JSON yang mudah digunakan, sehingga developer cenderung memilihnya sebagai standar. Sebaliknya, XML masih banyak digunakan di sistem enterprise atau aplikasi legacy yang membutuhkan validasi ketat, namespace, serta struktur dokumen kompleks, misalnya dalam SOAP atau konfigurasi perangkat. Namun, dengan tren teknologi yang semakin mengutamakan kecepatan, kesederhanaan, dan efisiensi, JSON kini menjadi pilihan utama untuk pertukaran data.
+
+### Fungsi dari method is_valid()
+Method ini akan mereturn True jika form sudah diisi (bound) dan tidak memiliki error. Jika salah satu tidak terpenuhi, method akan mereturn False. Kita membutuhkan method ini untuk memastikan data pada form valid sebelum dimasukkan ke database. Dengan ini, kualitas data tetap terjaga dan sistem bisa berjalan stabil.
+
+### Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
+CSRF terjadi ketika penyerang mencoba membuat pengguna yang sudah login di suatu website tanpa sadar mengirimkan request berbahaya (misalnya transfer uang, ubah password) melalui link atau script dari situs lain. 
+
+Contoh kasus jika tanpa csrf_token.
+1. Login di internet banking dan ingin transfer uang
+```
+https://www.klikbca.com/transfer?to=<SomeAccountnumber>&amount=<SomeAmount>
+```
+2. Membuka suatu web yang ternyata malicious
+3. Jika pemilik dari malicious website itu mengetahui form dari request dan menebak kita sekarang lagi login klikbca, mereka bisa memasukkan request di page mereka seperti:
+```
+(https://www.klikbca.com/transfer?to=123456&amount=5000000
+```
+dimana 123456 adalah rekening mereka, and 5000000 amount transfer yang memang mau kita kirim.
+
+4. Kita buka lagi web malicious itu, jadi browser kita memproses request jahat itu.
+5. Karena bank tidak bisa mengetahui asal dari request tersebut. Jadi browser bakal kirim requestnya bersamaan dengan cookie www.klikbca.com dan requestnya bakal terlihat seperti beneran. Akhirnya, banknya acc dan uangnya pun kesedot.
+
+Disinilah csrf_token digunakan, token ini merupakan angka random besar yang tidak dapat ditebak. Token ini akan diinclude ke web page ketika ditampilkan ke user (selalu berbeda tiap page dan tiap usernya). Pada saat request dikirim, token ini akan diverifikasi kembali oleh server sehingga hanya request dari halaman sah yang diterima.
 
 ### Screenshot dari hasil akses URL pada Postman📨
 1. xml/
 <img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 38 49" src="https://github.com/user-attachments/assets/77ef71a7-c0d6-4674-bd64-3d32d87c10ca" />
 2. json/
 <img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 39 00" src="https://github.com/user-attachments/assets/1cf2656c-409c-4456-87ae-ace585323f31" />
-3. xml/<product_id>
+3. xml/product_id
 <img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 39 19" src="https://github.com/user-attachments/assets/9acf56b2-71d2-4f7e-b0c1-12a5e7f889e1" />
-4. json/<product_id>
+4. json/product_id
 <img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 39 11" src="https://github.com/user-attachments/assets/17a2249e-dab3-4b18-a1e0-e366e04fe65a" />
 
 ### Feedback untuk asisten dosen di tutorial 2
