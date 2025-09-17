@@ -12,8 +12,15 @@
 
 <p><b>{{ product.get_category_display }}
     </b>{% if product.is_featured %} | <b>Featured</b>{% endif %}
-    {% if product.is_product_recommended %} | <b>Loved by Everyone!</b>{% endif %}</p>
+    {% if product.is_product_recommended %} | <b>Loved by Everyone!</b>{% endif %} | <b>Rating: {{ product.rating }}/5</b></p>
 
 <p>{{ product.description }}</p>
+
+{% if product.user %}
+    <p>Designer: {{ product.user.username }}</p>
+{% else %}
+    <p>Designer: Best designer in the world</p>
+{% endif %}
+
 
 {% endblock content %}
