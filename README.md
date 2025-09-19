@@ -1,7 +1,11 @@
 # luluorange🍊
 Link to project: https://rasyad-zulham-luluorange.pbp.cs.ui.ac.id/
 
-## Tugas 2
+Comprehensive explanation for every assignment👇🏻
+
+<details>
+<summary>Tugas 2</summary>
+
 ### Step by step implementasi checklist✅
 
 #### Inisiasi
@@ -215,6 +219,10 @@ Untuk menguasai sebuah framework, kita harus memiliki landasan kuat dalam bahasa
 
 ### Feedback untuk asisten dosen di tutorial 1
 Overall tutorialnya sangat jelas dan detail, saya bisa mengikutinya dengan baik. Jika ada kesulitan, asisten dosen pun dengan sigap membantu menyelesaikan problem. 
+</details>
+
+<details>
+<summary>Tugas 3</summary>
 
 ## Tugas 3
 ### Step by step implementasi checklist✅
@@ -480,6 +488,7 @@ Disinilah csrf_token digunakan, token ini merupakan angka random besar yang tida
 
 ### Feedback untuk asisten dosen di tutorial 2
 Pada tutorial 2 dan tugas 3 ini, saya mengalami error di database. Asdos langsung menjawab pertanyaan di tutorial. FAQ di discord juga membantu menyelesaikan sebagian besar permasalahan tersebut.
+<details>
 
 
 
