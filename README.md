@@ -488,7 +488,73 @@ Disinilah csrf_token digunakan, token ini merupakan angka random besar yang tida
 
 ### Feedback untuk asisten dosen di tutorial 2
 Pada tutorial 2 dan tugas 3 ini, saya mengalami error di database. Asdos langsung menjawab pertanyaan di tutorial. FAQ di discord juga membantu menyelesaikan sebagian besar permasalahan tersebut.
-<details>
+</details>
 
+
+<details>
+<summary>Tugas 4</summary>
+   
+### Apa itu Django AuthenticationForm? Jelaskan juga kelebihan dan kekurangannya.
+AuthenticationForm adalah form bawaan Django yang terdapat di modul django.contrib.auth.forms. Form ini digunakan untuk autentikasi login user (mengecek apakah username dan password valid). Secara default, form ini akan meminta username dan password, melakukan validasi apakah kombinasi keduanya cocok dengan akun yang ada di database, dan menyediakan integrasi langsung dengan sistem authenticate() dan login() dari Django.
+
+#### Kelebihan:
+1. Tidak perlu implementasi ulang form login, tinggal pakai.
+2. Menangani validasi username/password secara langsung dengan authenticate().
+3. Bisa langsung dipakai bersama view bawaan Django (LoginView).
+4. Sudah mengikuti praktik keamanan standar Django (hashing password, CSRF protection).
+5. Bisa ditambah field atau style lewat inheritance.
+
+#### Kekurangan:
+1. Hanya mendukung username dan password, jika ingin login dengan email atau yang lainnya, perlu di-override.
+2. Jika menginginkan fitur tambahan seperti login dengan OTP, social login, atau captcha harus ditambahkan manual.
+3. Hanya menyediakan struktur form dasar, tidak ada tampilan cantik; developer harus menyesuaikan template.
+4. Tergantung pada model user default, jika pakai custom user model dengan login method berbeda, perlu modifikasi tambahan.
+
+### Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
+Autentikasi adalah proses memverifikasi identitas seorang user, misalnya seperti username dan password yang diinput benar dan sesuai. Setelah itu, baru dilakukan otorisasi, yaitu proses memberikan akses kepada user yang telah ter-autentikasi. Akses yang diberikan disesuaikan dengan role dari setiap akun. Contohnya admin dan user, pastinya memilki hak akses yang berbeda.
+
+#### Implementasi
+Django menyediakan sistem autentikasi bawaan lewat django.contrib.auth. Komponen utamanya:
+1. User model (django.contrib.auth.models.User) → menyimpan data user.
+2. Authentication backends → mekanisme memvalidasi user (default: username + password, tapi bisa ditambah custom backend, misalnya email login).
+3. Form dan view → seperti AuthenticationForm, LoginView, dan fungsi authenticate() + login().
+
+Setelah user terautentikasi, Django cek hak aksesnya lewat sistem permissions dan groups. Tiga mekanisme utamanya:
+
+1. is_authenticated → cek apakah user sudah login.
+2. is_staff, is_superuser → flag khusus untuk admin/staf.
+3. Permissions → bisa di-assign ke user/group.
+
+### Apa saja kelebihan dan kekurangan session dan cookies dalam konteks menyimpan state di aplikasi web?
+
+----- Cookie -----
+
+Kelebihan
+- Ringan, tidak memakan resource besar karena disimpan di client
+- Dapat diakses oleh semua window di browser
+- Bisa digunakan lintas request yang emudahkan "remember me" login atau preferensi user
+- Lebih cepat karena data disimpan di client
+- Data tetap ada walaupun browser ditutup (kecuali jika kadaluarsa)
+
+Kekurangan
+- Cookie hanya dapat menyimpan maksimal 4 KB data
+- Kurang aman karena terexposed ke client
+
+---- Session ----
+
+Kelebihan
+- Sessions menyimpan data pengguna di server, membuatnya lebih aman dan ideal untuk menyimpan informasi sementara atau informasi yang sensitif
+- Bisa menyimpan data dalam jumlah yang besar
+
+Kekurangan
+- Sedikit lebih lambat karena setiap request membutuhkan server processing
+- Data hilang ketika session kadaluarsa atau server restart (kecuali disimpan di database)
+
+### Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
+Terdapat beberapa risiko potensial yang harus diwaspadai dalam penggunaan cookies, diantaranya cross site scripting (XSS) yang memungkinkan pengguna untuk menginjeksi client side scripts ke browser pengguna lain. Menggunakan template Django sudah melindungi dari sebagian besar serangan XSS. Namun, penting untuk memahami sejauh mana perlindungan ini bekerja dan apa saja keterbatasannya.
+
+Cross site request forgery juga bisa menjadi risiko dimana malicious user dapat melakukan aksi menggunakan kredensial dari pengguna lain tanpa izin atau sepengetahuan pengguna tersebut. Django memiliki built in protection untuk menangani CSRF, cara kerjanya adalah dengan memeberikan sebuah CSRF token pada setiap form yang diisi. Django akan memastikan form yang di POST memiliki CSRF token yang sama dengan yang miliki oleh user saat membuka form. Ini memastikan attacker nggak bisa nge-replay form POST ke website dan bikin user lain yang udah login tanpa sadar submit form itu lagi. Attacker harus tahu CSRF token yang sifatnya user-specific (disimpan di cookie).
+
+</detail>
 
 
