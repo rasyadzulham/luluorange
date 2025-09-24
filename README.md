@@ -6,9 +6,9 @@ Comprehensive explanation for every assignment👇🏻
 <details>
 <summary>Tugas 2</summary>
 
-### Step by step implementasi checklist✅
+## Step by step implementasi checklist✅
 
-#### Inisiasi
+### Inisiasi
 1. Membuat direktori luluorange, membuat virtual environment pada direktori tersebut dengan
    ~~~
    python3 -m venv env
@@ -103,7 +103,7 @@ Comprehensive explanation for every assignment👇🏻
    ```
 
 
-#### Membuat models, views, dan template
+### Membuat models, views, dan template
 
 7. Memodifikasi berkas models.py pada aplikasi main, membuat model dengan nama Product, dan memasukkan atribut-atribut wajib yang tertera pada dokumen soal
    ```python
@@ -154,7 +154,7 @@ Comprehensive explanation for every assignment👇🏻
     <p>{{ class }}</p>
     ```
 
-#### Melakukan routing URL
+### Melakukan routing URL
 
 11. Untuk mengonfigurasi routing URL aplikasi main, buat urls.py pada aplikasi main dan mengisinya dengan URL pattern yang kita kehendaki
     ```python
@@ -179,7 +179,7 @@ Comprehensive explanation for every assignment👇🏻
     python3 manage.py runserver
     ~~~
     
-#### Deployment ke PWS
+### Deployment ke PWS
 
 14. Buat file .gitignore untuk menentukan berkas-berkas dan direktori-direktori yang harus diabaikan oleh Git.
 15. Buka PWS dan create new project, lalu copy paste isi file .env.prod ke tab environs pada project yang baru dibuat
@@ -192,7 +192,7 @@ Comprehensive explanation for every assignment👇🏻
     ~~~
 18. Apabila status proyek 'running', maka bisa klik view project
     
-### Request-Response Cycle💫
+## Request-Response Cycle💫
 
 <img width="1130" height="635" alt="Screen Shot 2025-09-08 at 21 02 44" src="https://github.com/user-attachments/assets/cec128c2-93e2-4a98-8775-afdf70b52a8b" />
 
@@ -201,7 +201,7 @@ File settings.py sering disebut juga dengan jantung dari proyek Django. Settings
 
 Source: https://dev.to/rupesh_mishra/understanding-djangos-settingspy-file-a-comprehensive-guide-for-beginners-35e2#:~:text=The%20settings.py%20file%20is,file%20directories%2C%20and%20much%20more.
 
-### Cara kerja migrasi database di Django
+## Cara kerja migrasi database di Django
 Migrasi database di Django adalah mekanisme untuk menjaga skema database (tabel, kolom, relasi, constraint) tetap sinkron dengan model Python yang telah didefinisikan pada file models.py. Django tidak langsung mengubah database ketika mengubah models.py. Oleh karena itu, jalankan command
 ~~~
 python3 manage.py makemigrations
@@ -214,19 +214,18 @@ python3 manage.py migrate
 ~~~
 Django akan membaca semua file migrasi yang belum pernah dijalankan, lalu mengeksekusi SQL akan dijalankan hingga pada akhirnya database sekarang sinkron dengan model.
 
-### Mengapa framework Django dijadikan permulaan pembelajaran pengembangan perangkat lunak?
+## Mengapa framework Django dijadikan permulaan pembelajaran pengembangan perangkat lunak?
 Untuk menguasai sebuah framework, kita harus memiliki landasan kuat dalam bahasa pemrograman yang digunakan oleh framework tersebut. Django adalah framework berbasis Python, Python merupakan bahasa pemrograman pengantar pada mata kuliah DDP-1, sehingga saya sudah terbiasa dengan sintaksnya yang akan membuat proses pembelajaran akan lebih mudah. Dari beberapa sumber yang saya baca, Django adalah framework web tingkat tinggi yang menyediakan banyak fitur bawaan, sehingga memungkinkan kita untuk membangun aplikasi dengan cepat. Django juga memiliki dokumentasi yang sangat baik dan kuat dengan komunitas yang aktif, sehingga mudah untuk belajar dan mendapatkan bantuan jika diperlukan.
 
-### Feedback untuk asisten dosen di tutorial 1
+## Feedback untuk asisten dosen di tutorial 1
 Overall tutorialnya sangat jelas dan detail, saya bisa mengikutinya dengan baik. Jika ada kesulitan, asisten dosen pun dengan sigap membantu menyelesaikan problem. 
 </details>
 
 <details>
 <summary>Tugas 3</summary>
 
-## Tugas 3
-### Step by step implementasi checklist✅
-#### Menambahkan 4 fungsi views baru untuk melihat objek yang sudah ditambahkan dalam format XML, JSON, XML by ID, dan JSON by ID.
+## Step by step implementasi checklist✅
+### Menambahkan 4 fungsi views baru untuk melihat objek yang sudah ditambahkan dalam format XML, JSON, XML by ID, dan JSON by ID.
 ```python
 # views.py
 def show_xml(request):
@@ -255,7 +254,7 @@ def show_json_by_id(request, product_id):
     except Product.DoesNotExist:
         return HttpResponse(status=404)
 ```
-#### Membuat routing URL untuk masing-masing views yang telah ditambahkan
+### Membuat routing URL untuk masing-masing views yang telah ditambahkan
 ```python
 # urls.py di aplikasi
 urlpatterns = [
@@ -268,7 +267,7 @@ urlpatterns = [
 ]
 ```
 
-#### Membuat halaman yang menampilkan data objek model yang memiliki tombol "Add" yang akan redirect ke halaman form, serta tombol "Detail" pada setiap data objek model yang akan menampilkan halaman detail objek.
+### Membuat halaman yang menampilkan data objek model yang memiliki tombol "Add" yang akan redirect ke halaman form, serta tombol "Detail" pada setiap data objek model yang akan menampilkan halaman detail objek.
 1.  Buat direktori templates pada root dan buat file base.html didalamnya
 ```python
 {% load static %}
@@ -344,7 +343,7 @@ TEMPLATES = [
 {% endif %}
 {% endblock content %}
 ```
-#### Membuat halaman form untuk menambahkan objek model pada app sebelumnya.
+### Membuat halaman form untuk menambahkan objek model pada app sebelumnya.
 1. Buat forms.py di direktori aplikasi
 ```python
 from django.forms import ModelForm
@@ -404,7 +403,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 ...
 ```
-#### Membuat halaman yang menampilkan detail dari setiap data objek model.
+### Membuat halaman yang menampilkan detail dari setiap data objek model.
 1. Buat file product_detail.html di direktori templates aplikasi
 ```python
 {% extends 'base.html' %}
@@ -446,16 +445,16 @@ urlpatterns = [
     ...
 ]
 ```
-### Mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?📦
+## Mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?📦
 Dalam pengimplementasian sebuah platform, data delivery sangat penting karena menjadi tulang punggung komunikasi antar komponen, mulai dari front-end, back-end, database, hingga integrasi dengan layanan pihak ketiga. Mekanisme ini memastikan data dapat ditransfer dengan konsisten, efisien, dan andal, sehingga setiap perubahan pada sistem segera tersampaikan ke seluruh bagian platform tanpa menimbulkan inkonsistensi. Selain itu, data delivery mendukung skalabilitas dengan menjaga performa ketika jumlah pengguna meningkat, serta memberikan reliabilitas melalui mekanisme retry dan error handling agar data tidak hilang meskipun terjadi gangguan. Dengan demikian, data delivery menjadikan platform berfungsi sebagai sebuah sistem yang utuh, bukan sekadar kumpulan modul terpisah.
 
-### XML vs JSON
+## XML vs JSON
 Menurut saya, JSON lebih unggul karena lebih simpel, fleksibel, dan cepat dibandingkan dengan XML. JSON lebih populer dibandingkan XML karena sifatnya yang lebih ringan, sederhana, dan mudah dibaca baik oleh manusia maupun mesin. JSON tidak menggunakan banyak tag seperti XML sehingga ukuran datanya lebih kecil dan proses parsing lebih cepat, membuatnya sangat efisien untuk kebutuhan komunikasi data di web modern, aplikasi mobile, serta layanan API seperti REST dan GraphQL. Selain itu, hampir semua bahasa pemrograman menyediakan dukungan bawaan atau pustaka JSON yang mudah digunakan, sehingga developer cenderung memilihnya sebagai standar. Sebaliknya, XML masih banyak digunakan di sistem enterprise atau aplikasi legacy yang membutuhkan validasi ketat, namespace, serta struktur dokumen kompleks, misalnya dalam SOAP atau konfigurasi perangkat. Namun, dengan tren teknologi yang semakin mengutamakan kecepatan, kesederhanaan, dan efisiensi, JSON kini menjadi pilihan utama untuk pertukaran data.
 
-### Fungsi dari method is_valid()
+## Fungsi dari method is_valid()
 Method ini akan mereturn True jika form sudah diisi (bound) dan tidak memiliki error. Jika salah satu tidak terpenuhi, method akan mereturn False. Kita membutuhkan method ini untuk memastikan data pada form valid sebelum dimasukkan ke database. Dengan ini, kualitas data tetap terjaga dan sistem bisa berjalan stabil.
 
-### Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
+## Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
 CSRF terjadi ketika penyerang mencoba membuat pengguna yang sudah login di suatu website tanpa sadar mengirimkan request berbahaya (misalnya transfer uang, ubah password) melalui link atau script dari situs lain. 
 
 Contoh kasus jika tanpa csrf_token.
@@ -476,7 +475,7 @@ dimana 123456 adalah rekening mereka, and 5000000 amount transfer yang memang ma
 
 Disinilah csrf_token digunakan, token ini merupakan angka random besar yang tidak dapat ditebak. Token ini akan diinclude ke web page ketika ditampilkan ke user (selalu berbeda tiap page dan tiap usernya). Pada saat request dikirim, token ini akan diverifikasi kembali oleh server sehingga hanya request dari halaman sah yang diterima.
 
-### Screenshot dari hasil akses URL pada Postman📨
+## Screenshot dari hasil akses URL pada Postman📨
 1. xml/
 <img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 38 49" src="https://github.com/user-attachments/assets/77ef71a7-c0d6-4674-bd64-3d32d87c10ca" />
 2. json/
@@ -486,7 +485,7 @@ Disinilah csrf_token digunakan, token ini merupakan angka random besar yang tida
 4. json/product_id
 <img width="1440" height="900" alt="Screen Shot 2025-09-15 at 20 39 11" src="https://github.com/user-attachments/assets/17a2249e-dab3-4b18-a1e0-e366e04fe65a" />
 
-### Feedback untuk asisten dosen di tutorial 2
+## Feedback untuk asisten dosen di tutorial 2
 Pada tutorial 2 dan tugas 3 ini, saya mengalami error di database. Asdos langsung menjawab pertanyaan di tutorial. FAQ di discord juga membantu menyelesaikan sebagian besar permasalahan tersebut.
 </details>
 
@@ -494,26 +493,315 @@ Pada tutorial 2 dan tugas 3 ini, saya mengalami error di database. Asdos langsun
 <details>
 <summary>Tugas 4</summary>
    
-### Apa itu Django AuthenticationForm? Jelaskan juga kelebihan dan kekurangannya.
+## Step by step implementasi checklist✅
+### Mengimplementasikan fungsi login
+1. Buka views.py tambahkan import pada bagian atas dan fungsi login_user.
+```python
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login
+...
+def login_user(request):
+   if request.method == 'POST':
+      form = AuthenticationForm(data=request.POST)
+
+      if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('main:show_main')
+
+   else:
+      form = AuthenticationForm(request)
+   context = {'form': form}
+   return render(request, 'login.html', context)
+```
+2. Buat login.html pada templates aplikasi
+``` html
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="login">
+  <h1>Login</h1>
+
+  <form method="POST" action="">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input class="btn login_btn" type="submit" value="Login" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} Don't have an account yet?
+  <a href="{% url 'main:register' %}">Register Now</a>
+</div>
+
+{% endblock content %}
+```
+3. Buka urls.py tambahkan import login_user dari views.py dan masukkan path untuk login
+```python
+from main.views import login_user
+...
+urlpatterns = [
+   ...
+   path('login/', login_user, name='login'),
+]
+```
+
+### Mengimplementasikan fungsi logout
+1. Buka views.py tambahkan import logout dari django.contrib.auth pada bagian atas dan fungsi logout_user.
+```python
+from django.contrib.auth import logout
+...
+def logout_user(request):
+    logout(request)
+    return redirect('main:login')
+```
+2. Buka berkas main.html dan tambahkan button untuk logout
+``` html
+<a href="{% url 'main:logout' %}">
+  <button>Logout</button>
+</a>
+```
+3. Buka urls.py tambahkan import logout_user dari views.py dan masukkan path untuk logout
+```python
+from main.views import logout_user
+...
+urlpatterns = [
+   ...
+   path('logout/', logout_user, name='logout'),
+]
+```
+
+### Mengimplementasikan fungsi register
+1. Buka views.py tambahkan beberapa import untuk form pada bagian atas dan fungsi register.
+```python
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+...
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+2. Buat berkas register.html
+``` html
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+
+<div>
+  <h1>Register</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input type="submit" name="submit" value="Daftar" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+{% endblock content %}
+```
+3. Buka urls.py tambahkan import register dari views.py dan masukkan path untuk register
+```python
+from main.views import register
+...
+urlpatterns = [
+     ...
+     path('register/', register, name='register'),
+ ]
+```
+
+### Merestriksi pengguna agar hanya bisa mengakses halaman jika sudah login
+1. Tambahkan import decorator rogin_required pada bagian atas views.py
+``` python
+from django.contrib.auth.decorators import login_required
+```
+2. Tambahkan potongan kode diatas funsgi show_main dan show product
+``` python
+@login_required(login_url='/login')
+def show_main(request):
+...
+
+@login_required(login_url='/login')
+def show_product(request, id):
+...
+```
+### Menghubungkan model Product dengan User
+1. Buka models.py dan tambahkan import dibagian atas
+``` python
+...
+from django.contrib.auth.models import User
+...
+```
+2. Pada class Product tambahkan field user untuk menghubungkan satu product dengan satu user
+```python
+user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+```
+3. Lakukan migrate karena kita telah melakukan modifikasi pada model
+``` bash
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+4. Buka views.py dan ubah fungsi add_product agar bisa menyimpan product sesuai dengan user yang sedang login
+``` python
+@login_required(login_url='/login')
+def add_product(request):
+    form = ProductForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        product_entry = form.save(commit = False)
+        product_entry.user = request.user
+        product_entry.save()
+        return redirect('main:show_main')
+
+    context = {
+        'form': form
+    }
+
+    return render(request, "add_product.html", context)
+```
+4. Buka views.py dan ubah fungsi show_main agar bisa memfilter product mana saja yang ditambah oleh user yang sedang login
+``` python
+@login_required(login_url='/login')
+def show_main(request):
+    filter_type = request.GET.get("filter", "all")  # default 'all'
+
+    if filter_type == "all":
+        product_list = Product.objects.all()
+    else:
+        product_list = Product.objects.filter(user=request.user)
+
+    context = {
+        'npm' : '2406348540',
+        'name': 'Rasyad Zulham Rabani',
+        'app': 'Luluorange',
+        'class': 'PBP D',
+        'product_list': product_list,
+    }
+```
+5. Tambahkan tombol filter all dan my pada main.html
+``` html
+<a href="?filter=all">
+    <button type="button">All Products</button>
+</a>
+<a href="?filter=my">
+    <button type="button">My Products</button>
+</a>
+```
+6. Tampilkan nama author pada akhir product_detail.html, pada kasus ini saya misalkan desainer
+``` html
+{% if product.user %}
+    <p>Designer: {{ product.user.username }}</p>
+{% else %}
+    <p>Designer: Best designer in the world</p>
+{% endif %}
+```
+
+### Menampilkan detail informasi pengguna yang sedang logged in seperti username dan menerapkan cookies seperti last_login pada halaman utama aplikasi.
+1. Buka views.py pada aplikasi main dan Tambahkan import HttpResponseRedirect, reverse, dan datetime pada bagian paling atas.
+```python
+import datetime
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+```
+2. Ubah bagian kode di fungsi login_user untuk menyimpan cookie baru bernama last_login yang berisi timestamp terakhir kali pengguna melakukan login.
+``` python
+...
+if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        response = HttpResponseRedirect(reverse("main:show_main"))
+        response.set_cookie('last_login', str(datetime.datetime.now()))
+        return response
+...
+```
+3. Pada fungsi show_main, ubah context agar dapat menampilkan username yang sedang login dan mengambil waktu terakhir login
+```python
+context = {
+        'npm' : '2406348540',
+        'name': request.user.username,
+        'app': 'Luluorange',
+        'class': 'PBP D',
+        'product_list': product_list,
+        'last_login': request.COOKIES.get('last_login', 'Never'),
+    }
+```
+4. Ubah fungsi logout agar dapat menghapus cookie last_login
+```python
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+4. Tambahkan last_login pada main.html agar dapat ditampilkan ke pengguna
+``` python
+...
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+...
+```
+
+### Membuat dua akun dan tiga dummy data untuk setiap akun di lokal
+1. Melakukan register dua akun
+2. Melakukan add product ke masing-masing akun sebanyak tiga kali
+
+   
+## Apa itu Django AuthenticationForm? Jelaskan juga kelebihan dan kekurangannya.
 AuthenticationForm adalah form bawaan Django yang terdapat di modul django.contrib.auth.forms. Form ini digunakan untuk autentikasi login user (mengecek apakah username dan password valid). Secara default, form ini akan meminta username dan password, melakukan validasi apakah kombinasi keduanya cocok dengan akun yang ada di database, dan menyediakan integrasi langsung dengan sistem authenticate() dan login() dari Django.
 
-#### Kelebihan:
+### Kelebihan:
 1. Tidak perlu implementasi ulang form login, tinggal pakai.
 2. Menangani validasi username/password secara langsung dengan authenticate().
 3. Bisa langsung dipakai bersama view bawaan Django (LoginView).
 4. Sudah mengikuti praktik keamanan standar Django (hashing password, CSRF protection).
 5. Bisa ditambah field atau style lewat inheritance.
 
-#### Kekurangan:
+### Kekurangan:
 1. Hanya mendukung username dan password, jika ingin login dengan email atau yang lainnya, perlu di-override.
 2. Jika menginginkan fitur tambahan seperti login dengan OTP, social login, atau captcha harus ditambahkan manual.
 3. Hanya menyediakan struktur form dasar, tidak ada tampilan cantik; developer harus menyesuaikan template.
 4. Tergantung pada model user default, jika pakai custom user model dengan login method berbeda, perlu modifikasi tambahan.
 
-### Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
+## Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
 Autentikasi adalah proses memverifikasi identitas seorang user, misalnya seperti username dan password yang diinput benar dan sesuai. Setelah itu, baru dilakukan otorisasi, yaitu proses memberikan akses kepada user yang telah ter-autentikasi. Akses yang diberikan disesuaikan dengan role dari setiap akun. Contohnya admin dan user, pastinya memilki hak akses yang berbeda.
 
-#### Implementasi
+### Implementasi
 Django menyediakan sistem autentikasi bawaan lewat django.contrib.auth. Komponen utamanya:
 1. User model (django.contrib.auth.models.User) → menyimpan data user.
 2. Authentication backends → mekanisme memvalidasi user (default: username + password, tapi bisa ditambah custom backend, misalnya email login).
@@ -525,7 +813,7 @@ Setelah user terautentikasi, Django cek hak aksesnya lewat sistem permissions da
 2. is_staff, is_superuser → flag khusus untuk admin/staf.
 3. Permissions → bisa di-assign ke user/group.
 
-### Apa saja kelebihan dan kekurangan session dan cookies dalam konteks menyimpan state di aplikasi web?
+## Apa saja kelebihan dan kekurangan session dan cookies dalam konteks menyimpan state di aplikasi web?
 
 ----- Cookie -----
 
@@ -550,7 +838,7 @@ Kekurangan
 - Sedikit lebih lambat karena setiap request membutuhkan server processing
 - Data hilang ketika session kadaluarsa atau server restart (kecuali disimpan di database)
 
-### Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
+## Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
 Terdapat beberapa risiko potensial yang harus diwaspadai dalam penggunaan cookies, diantaranya cross site scripting (XSS) yang memungkinkan pengguna untuk menginjeksi client side scripts ke browser pengguna lain. Menggunakan template Django sudah melindungi dari sebagian besar serangan XSS. Namun, penting untuk memahami sejauh mana perlindungan ini bekerja dan apa saja keterbatasannya.
 
 Cross site request forgery juga bisa menjadi risiko dimana malicious user dapat melakukan aksi menggunakan kredensial dari pengguna lain tanpa izin atau sepengetahuan pengguna tersebut. Django memiliki built in protection untuk menangani CSRF, cara kerjanya adalah dengan memeberikan sebuah CSRF token pada setiap form yang diisi. Django akan memastikan form yang di POST memiliki CSRF token yang sama dengan yang miliki oleh user saat membuka form. Ini memastikan attacker nggak bisa nge-replay form POST ke website dan bikin user lain yang udah login tanpa sadar submit form itu lagi. Attacker harus tahu CSRF token yang sifatnya user-specific (disimpan di cookie).
