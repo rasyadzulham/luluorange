@@ -1,26 +1,89 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>{{ product.name }} - Luluorange</title>
+{% endblock meta %}
+
 {% block content %}
-<p><a href="{% url 'main:show_main' %}"><button>← Back to Product List</button></a></p>
+<div class="bg-gray-50 w-full min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Back Navigation -->
+        <div class="mb-6">
+            <a href="{% url 'main:show_main' %}" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                ← Back to Catalogue
+            </a>
+        </div>
+        
+        <!-- Article -->
+        <article class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            
+            <!-- Header -->
+            <div class="p-6 sm:p-8">
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-green-600 text-white">
+                        {{ product.get_category_display }}
+                    </span>
+                    {% if product.is_featured %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Featured
+                        </span>
+                    {% endif %}
+                    {% if product.is_product_recommended %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-red-100 text-red-800">
+                            Loved by everyone!
+                        </span>
+                    {% endif %}
+                </div>
 
-{% if product.thumbnail %}
-<img src="{{ product.thumbnail }}" alt="Product thumbnail" width="300">
-<br /><br />
-{% endif %}
+            </div>
 
-<h1>{{ product.name }}</h1>
-<h2><b>Rp. {{ product.price }}</b></h2>
+            <!-- Featured Image -->
+            {% if product.thumbnail %}
+                <div class="px-6 sm:px-8">
+                    <img src="{{ product.thumbnail }}" 
+                         alt="{{ product.name }}" 
+                         class="w-auto h-64 sm:h-80 lg:h-96 object-cover rounded-lg">
+                </div>
+            {% endif %}
 
-<p><b>{{ product.get_category_display }}
-    </b>{% if product.is_featured %} | <b>Featured</b>{% endif %}
-    {% if product.is_product_recommended %} | <b>Loved by Everyone!</b>{% endif %} | <b>Rating: {{ product.rating }}/5</b></p>
+            <div class="p-6 sm:p-8 space-y-0">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                    {{ product.name }}
+                </h1>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 leading-tight mb-4">
+                    IDR {{ product.price }}
+                </h2>
+                <h2 class="text-l sm:text-xl font-bold text-gray-900 leading-tight mb-4">
+                    ⭐️ {{ product.rating }}
+                </h2>
+            </div>
 
-<p>{{ product.description }}</p>
+            <!-- Content -->
+            <div class="px-6 pb-6 sm:px-8 pb-8">
+                <div class="text-gray-700 leading-relaxed whitespace-normal text-base sm:text-lg">
+                        {{ product.description }}
+                </div>
+            </div>
+        </div>
 
-{% if product.user %}
-    <p>Designer: {{ product.user.username }}</p>
-{% else %}
-    <p>Designer: Best designer in the world</p>
-{% endif %}
-
-
+            <!-- Author Info -->
+            <div class="border-t border-gray-200 p-6 sm:p-8 bg-gray-50">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="font-medium text-gray-900">
+                            {% if product.user %}
+                                <p>{{ product.user.username }}</p>
+                            {% else %}
+                                <p>Best Designer In The World</p>
+                            {% endif %}
+                        </div>
+                        <p class="text-sm text-gray-500">Designer</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
 {% endblock content %}

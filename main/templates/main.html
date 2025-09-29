@@ -50,7 +50,22 @@
 
     <p>{{ product.description|truncatewords:25 }}...</p>
 
-  <p><a href="{% url 'main:show_product' product.id %}"><button>See Details</button></a></p>
+  <p>
+    <a href="{% url 'main:show_product' product.id %}"><button>See Details</button></a>
+    {% if user.is_authenticated and product.user == user %}
+    <a href="{% url 'main:edit_product' product.pk %}">
+        <button>
+            Edit
+        </button>
+    </a>
+    </a>
+     <a href="{% url 'main:delete_product' product.pk %}">
+      <button>
+          Delete
+      </button>
+    </a>
+    {% endif %}
+  </p>
 </div>
 
 <hr>
