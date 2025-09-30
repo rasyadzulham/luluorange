@@ -849,7 +849,7 @@ Cross site request forgery juga bisa menjadi risiko dimana malicious user dapat 
 <summary>Tugas 5</summary>
 
 ## Step by step implementasi checklist✅
-### Mengimplementasikan fungsi untuk menghapus dan mengedit produk
+### Mengimplementasikan fungsi untuk menghapus dan mengedit produk🗑
 1. Buka views.py di direktori aplikasi dan tambahkan fungsi delete_product dan edit_product
 ``` python
 def edit_product(request, id):
@@ -926,7 +926,7 @@ urlpatterns = [
     {% endif %}
   </p>
 ```
-### Menambahkan tailwind CSS ke aplikasi dan konfigurasi static files
+### Menambahkan tailwind CSS ke aplikasi dan konfigurasi static files⚡️
 1. Untuk menyambungkan django dengan tailwind maka kita dapat memanfaatkan Content Delivery Network (CDN) dyang ditambahkan pada base.html
 ``` html
 <head>
@@ -1028,4 +1028,123 @@ else:
   </body>
 </html>
 ```
+### Styling page login, register, add product, edit product, dan detail product👔
+1. Modifikasi login.html
+2. Modifikasi register.html
+3. Modifikasi edit_product.html
+4. Modifikasi detail_product.html
+
+### Styling main page dengan navbar
+1. Pada direktori static, buat direktori image dan tambahkan gambar yang akan ditampilkan saat belum ada produk yang terdaftar
+2. Buat card_product.html pada direktori templates aplikasi dengan tombol edit dan hapus produk
+``` html
+...
+<!-- Action Buttons -->
+    {% if user.is_authenticated and product.user == user %}
+      <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+        <a href="{% url 'main:show_product' product.id %}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition-colors">
+          See Details →
+        </a>
+        <div class="flex space-x-2">
+          <a href="{% url 'main:edit_product' product.id %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">
+            Edit
+          </a>
+          <a href="{% url 'main:delete_product' product.id %}" class="text-red-600 hover:text-red-700 text-sm transition-colors">
+            Delete
+          </a>
+        </div>
+      </div>
+    {% else %}
+      <div class="pt-4 border-t border-gray-100">
+        <a href="{% url 'main:show_product' product.id %}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition-colors">
+          See Details →
+        </a>
+      </div>
+    {% endif %}
+...
+```
+3. Buat file navbar.html pada direktori templates root untuk membuat navbar yang responsive terhadap perbedaan ukuran device
+4. Modifikasi main.html dengan include navbar.html dan card_product.html
+``` html
+...
+{% include 'navbar.html' %}
+...
+<!-- Menampilkan gambar dan pesan jika belum ada produk yang terdaftar -->
+    {% if not product_list %}
+      <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+        <div class="w-32 h-32 mx-auto mb-4">
+          <img src="{% static 'image/no-product.png' %}" alt="No products available" class="w-full h-full object-contain">
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No product found</h3>
+        <p class="text-gray-500 mb-6">Be the first to share football news with the community.</p>
+        <a href="{% url 'main:add_product' %}" class="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors">
+          Add product
+        </a>
+      </div>
+    {% else %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for product in product_list %}
+          {% include 'card_product.html' with product=product %}
+        {% endfor %}
+      </div>
+    {% endif %}
+...
+```
+## Urutan prioritas pengambilan CSS selector👆🏻
+Misal
+```html
+<html>
+<head>
+  <style>
+    #demo {color: blue;} 
+    .test {color: green;}
+    p {color: red;}
+  </style>
+</head>
+<body>
+
+<p id="demo" class="test" style="color: pink;">Hello World!</p>
+
+</body>
+</html>
+```
+Maka prioritas selectorsnya yaitu:
+1. Inline style, override semua selectors. Dari contoh diatas: style="color: pink;"
+2. Id selectors, #demo {color: blue;}
+3. Class selectors, .test {color: green;}
+4. Element selectors, p {color: red;}
+5. Universal selector dan :where(), * dan where()
+
+## Responsive design💻
+Responsive web design (RWD) adalah pendekatan desain web untuk membuat halaman web page dapat ter-render dengan baik di semua ukuran layar dan resolusi dengan tetap mempertahankan good usability. RWD merupakan hal yang penting karena memberikan beberapa benefit diantaranya sebagai berikut.
+1. User experience akan meningkat karena ukuran halaman akan menyesuaikan device sehingga user dapat bernavigasi dengan mudah.
+2. Web juga akan lebih menjangkau banyak orang, karena tidak semua orang memiliki PC ataupun akan membuka web di PC.
+3. Cost effective, karena tidak perlu membangun banyak versi web untuk setiap device.
+4. Maintenace lebih mudah, karena tidak perlu mengelola berbagai versi web untuk setiap device.
+5. Competitive advantage, menawarkan experience yang seamless antar device.
+Aplikasi yang sudah menerapkan responsive design: Instagram
+Aplikasi yang belum menerapkan responsive design: SIAK NG
+
+## Margin, border, dan padding🧥
+Box model pada CSS pada dasarnya merupakan suatu box yang membungkus setiap elemen HTML dan terdiri atas:
+
+<img width="948" height="400" alt="Screen Shot 2025-09-30 at 19 10 23" src="https://github.com/user-attachments/assets/e27e93e0-ab3f-43c8-860e-5b01b0c39cb5" />
+1. Content: isi dari box (tempat terlihatnya teks dan gambar)
+2. Padding: mengosongkan area di sekitar konten (transparan)
+3. Border: garis tepian yang membungkus konten dan padding-nya
+4. Margin: mengosongkan area di sekitar border (transparan)
+
+Contoh implementasinya yaitu
+``` css
+div {
+  width: 320px;
+  height: 50px;
+  padding: 10px;
+  border: 5px solid gray;
+  margin: 0;
+}
+```
+
+## Flex box dan grid layout📦
+Flexbox adalah metode layout untuk mengatur item berdasarkan baris ATAU kolom. Grid layout menghadirkan sistem layout grid-based, with rows DAN columns. Flexbox digunakan untuk layout satu dimensi, sedangkan grid layout digunakan untuk layout dua dimensi. Oleh karena itu, Flexbox cocok digunakan untuk membuat layout web yang kompleks. Kedua metode tersebut mempermudah desain struktur layout yang responsif, tanpa menggunakan float atau positioning. 
 </details>
