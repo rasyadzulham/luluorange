@@ -843,6 +843,189 @@ Terdapat beberapa risiko potensial yang harus diwaspadai dalam penggunaan cookie
 
 Cross site request forgery juga bisa menjadi risiko dimana malicious user dapat melakukan aksi menggunakan kredensial dari pengguna lain tanpa izin atau sepengetahuan pengguna tersebut. Django memiliki built in protection untuk menangani CSRF, cara kerjanya adalah dengan memeberikan sebuah CSRF token pada setiap form yang diisi. Django akan memastikan form yang di POST memiliki CSRF token yang sama dengan yang miliki oleh user saat membuka form. Ini memastikan attacker nggak bisa nge-replay form POST ke website dan bikin user lain yang udah login tanpa sadar submit form itu lagi. Attacker harus tahu CSRF token yang sifatnya user-specific (disimpan di cookie).
 
-</detail>
+</details>
 
+<details>
+<summary>Tugas 5</summary>
 
+## Step by step implementasi checklist✅
+### Mengimplementasikan fungsi untuk menghapus dan mengedit produk
+1. Buka views.py di direktori aplikasi dan tambahkan fungsi delete_product dan edit_product
+``` python
+def edit_product(request, id):
+    news = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance=news)
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
+
+    context = {
+        'form': form
+    }
+
+    return render(request, "edit_product.html", context)
+
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
+```
+2. Buat edit_product.html pada direktori templates aplikasi
+``` html
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h1>Edit News</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+        <tr>
+            <td></td>
+            <td>
+                <input type="submit" value="Edit Product"/>
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% endblock %}
+```
+3. Buka urls.py di direktori aplikasi tambahkan
+``` python
+# Di paling atas
+from main.views delete_product, edit_product
+
+# dalam urlpatterns
+urlpatterns = [
+    ...
+    path('product/<uuid:id>/edit', edit_product, name='edit_product'),
+    path('product/<uuid:id>/delete', delete_product, name='delete_product'),
+]
+```
+4. Tambahkan tombol edit dan delete product di samping tombol see details pada main.html
+``` html
+<p>
+    <a href="{% url 'main:show_product' product.id %}"><button>See Details</button></a>
+    {% if user.is_authenticated and product.user == user %}
+    <a href="{% url 'main:edit_product' product.pk %}">
+        <button>
+            Edit
+        </button>
+    </a>
+    </a>
+     <a href="{% url 'main:delete_product' product.pk %}">
+      <button>
+          Delete
+      </button>
+    </a>
+    {% endif %}
+  </p>
+```
+### Menambahkan tailwind CSS ke aplikasi dan konfigurasi static files
+1. Untuk menyambungkan django dengan tailwind maka kita dapat memanfaatkan Content Delivery Network (CDN) dyang ditambahkan pada base.html
+``` html
+<head>
+{% block meta %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock meta %}
+<script src="https://cdn.tailwindcss.com">
+</script>
+</head>
+```
+2. Tambahkan middlewear WhiteNoise pada settings.py
+``` python
+...
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', #Tambahkan tepat di bawah SecurityMiddleware
+    ...
+]
+...
+```
+3. Tambahkan konfigurasi static pada settings.py
+``` python
+...
+STATIC_URL = '/static/'
+if DEBUG:
+    STATICFILES_DIRS = [
+        BASE_DIR / 'static' # merujuk ke /static root project pada mode development
+    ]
+else:
+    STATIC_ROOT = BASE_DIR / 'static' # merujuk ke /static root project pada mode production
+...
+```
+4. Buat direktori static pada direktori root, buat direktori css, dan buat file global.css
+``` css
+/* Di sini bisa mendefinisikan kelas styling sendiri */
+.form-style form input, form textarea, form select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid #bcbcbc;
+    border-radius: 0.375rem;
+}
+.form-style form input:focus, form textarea:focus, form select:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px #16a34a;
+}
+
+.form-style input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: 2px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.form-style input[type="checkbox"]:checked {
+    background-color: #16a34a;
+    border-color: #16a34a;
+}
+
+.form-style input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+.form-style input[type="checkbox"]:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+```
+5. Ubah base.html pada templates root agar terhubung dengan global.css dan script Tailwind
+``` html
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% block meta %} {% endblock meta %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}"/>
+  </head>
+  <body>
+    {% block content %} {% endblock content %}
+  </body>
+</html>
+```
+</details>
