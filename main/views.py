@@ -16,6 +16,14 @@ def show_main(request):
 
     if filter_type == "all":
         product_list = Product.objects.all()
+    elif filter_type == "atasan":
+        product_list = Product.objects.filter(category='atasan')
+    elif filter_type == "bawahan":
+        product_list = Product.objects.filter(category='bawahan')
+    elif filter_type == "sepatu":
+        product_list = Product.objects.filter(category='sepatu')
+    elif filter_type == "aksesoris":
+        product_list = Product.objects.filter(category='aksesoris')
     else:
         product_list = Product.objects.filter(user=request.user)
 
