@@ -27,11 +27,13 @@
         </a>
       </div>
       {% if user.is_authenticated %}
-        <div class="text-sm text-gray-500">
+      <div class="text-sm text-gray-500">
           Last login: {{ last_login }}
-        </div>
+      </div>
       {% endif %}
+      
     </div>
+
 
     <!-- Product Grid -->
     {% if not product_list %}
@@ -41,7 +43,7 @@
         </div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No product found</h3>
         <p class="text-gray-500 mb-6">Be the first to share football news with the community.</p>
-        <a href="{% url 'main:add_product' %}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+        <a href="{% url 'main:add_product' %}" class="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors">
           Add product
         </a>
       </div>

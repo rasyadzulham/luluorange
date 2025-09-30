@@ -24,6 +24,8 @@ def show_main(request):
         product_list = Product.objects.filter(category='sepatu')
     elif filter_type == "aksesoris":
         product_list = Product.objects.filter(category='aksesoris')
+    elif filter_type == "bola":
+        product_list = Product.objects.filter(category='aksesoris')
     else:
         product_list = Product.objects.filter(user=request.user)
 
