@@ -843,6 +843,308 @@ Terdapat beberapa risiko potensial yang harus diwaspadai dalam penggunaan cookie
 
 Cross site request forgery juga bisa menjadi risiko dimana malicious user dapat melakukan aksi menggunakan kredensial dari pengguna lain tanpa izin atau sepengetahuan pengguna tersebut. Django memiliki built in protection untuk menangani CSRF, cara kerjanya adalah dengan memeberikan sebuah CSRF token pada setiap form yang diisi. Django akan memastikan form yang di POST memiliki CSRF token yang sama dengan yang miliki oleh user saat membuka form. Ini memastikan attacker nggak bisa nge-replay form POST ke website dan bikin user lain yang udah login tanpa sadar submit form itu lagi. Attacker harus tahu CSRF token yang sifatnya user-specific (disimpan di cookie).
 
-</detail>
+</details>
 
+<details>
+<summary>Tugas 5</summary>
 
+## Step by step implementasi checklist✅
+### Mengimplementasikan fungsi untuk menghapus dan mengedit produk🗑
+1. Buka views.py di direktori aplikasi dan tambahkan fungsi delete_product dan edit_product
+``` python
+def edit_product(request, id):
+    news = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance=news)
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
+
+    context = {
+        'form': form
+    }
+
+    return render(request, "edit_product.html", context)
+
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
+```
+2. Buat edit_product.html pada direktori templates aplikasi
+``` html
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h1>Edit News</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+        <tr>
+            <td></td>
+            <td>
+                <input type="submit" value="Edit Product"/>
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% endblock %}
+```
+3. Buka urls.py di direktori aplikasi tambahkan
+``` python
+# Di paling atas
+from main.views delete_product, edit_product
+
+# dalam urlpatterns
+urlpatterns = [
+    ...
+    path('product/<uuid:id>/edit', edit_product, name='edit_product'),
+    path('product/<uuid:id>/delete', delete_product, name='delete_product'),
+]
+```
+4. Tambahkan tombol edit dan delete product di samping tombol see details pada main.html
+``` html
+<p>
+    <a href="{% url 'main:show_product' product.id %}"><button>See Details</button></a>
+    {% if user.is_authenticated and product.user == user %}
+    <a href="{% url 'main:edit_product' product.pk %}">
+        <button>
+            Edit
+        </button>
+    </a>
+    </a>
+     <a href="{% url 'main:delete_product' product.pk %}">
+      <button>
+          Delete
+      </button>
+    </a>
+    {% endif %}
+  </p>
+```
+### Menambahkan tailwind CSS ke aplikasi dan konfigurasi static files⚡️
+1. Untuk menyambungkan django dengan tailwind maka kita dapat memanfaatkan Content Delivery Network (CDN) dyang ditambahkan pada base.html
+``` html
+<head>
+{% block meta %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock meta %}
+<script src="https://cdn.tailwindcss.com">
+</script>
+</head>
+```
+2. Tambahkan middlewear WhiteNoise pada settings.py
+``` python
+...
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', #Tambahkan tepat di bawah SecurityMiddleware
+    ...
+]
+...
+```
+3. Tambahkan konfigurasi static pada settings.py
+``` python
+...
+STATIC_URL = '/static/'
+if DEBUG:
+    STATICFILES_DIRS = [
+        BASE_DIR / 'static' # merujuk ke /static root project pada mode development
+    ]
+else:
+    STATIC_ROOT = BASE_DIR / 'static' # merujuk ke /static root project pada mode production
+...
+```
+4. Buat direktori static pada direktori root, buat direktori css, dan buat file global.css
+``` css
+/* Di sini bisa mendefinisikan kelas styling sendiri */
+.form-style form input, form textarea, form select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid #bcbcbc;
+    border-radius: 0.375rem;
+}
+.form-style form input:focus, form textarea:focus, form select:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px #16a34a;
+}
+
+.form-style input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: 2px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.form-style input[type="checkbox"]:checked {
+    background-color: #16a34a;
+    border-color: #16a34a;
+}
+
+.form-style input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+.form-style input[type="checkbox"]:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+```
+5. Ubah base.html pada templates root agar terhubung dengan global.css dan script Tailwind
+``` html
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% block meta %} {% endblock meta %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}"/>
+  </head>
+  <body>
+    {% block content %} {% endblock content %}
+  </body>
+</html>
+```
+### Styling page login, register, add product, edit product, dan detail product👔
+1. Modifikasi login.html
+2. Modifikasi register.html
+3. Modifikasi edit_product.html
+4. Modifikasi detail_product.html
+
+### Styling main page dengan navbar
+1. Pada direktori static, buat direktori image dan tambahkan gambar yang akan ditampilkan saat belum ada produk yang terdaftar
+2. Buat card_product.html pada direktori templates aplikasi dengan tombol edit dan hapus produk
+``` html
+...
+<!-- Action Buttons -->
+    {% if user.is_authenticated and product.user == user %}
+      <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+        <a href="{% url 'main:show_product' product.id %}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition-colors">
+          See Details →
+        </a>
+        <div class="flex space-x-2">
+          <a href="{% url 'main:edit_product' product.id %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">
+            Edit
+          </a>
+          <a href="{% url 'main:delete_product' product.id %}" class="text-red-600 hover:text-red-700 text-sm transition-colors">
+            Delete
+          </a>
+        </div>
+      </div>
+    {% else %}
+      <div class="pt-4 border-t border-gray-100">
+        <a href="{% url 'main:show_product' product.id %}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition-colors">
+          See Details →
+        </a>
+      </div>
+    {% endif %}
+...
+```
+3. Buat file navbar.html pada direktori templates root untuk membuat navbar yang responsive terhadap perbedaan ukuran device
+4. Modifikasi main.html dengan include navbar.html dan card_product.html
+``` html
+...
+{% include 'navbar.html' %}
+...
+<!-- Menampilkan gambar dan pesan jika belum ada produk yang terdaftar -->
+    {% if not product_list %}
+      <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+        <div class="w-32 h-32 mx-auto mb-4">
+          <img src="{% static 'image/no-product.png' %}" alt="No products available" class="w-full h-full object-contain">
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No product found</h3>
+        <p class="text-gray-500 mb-6">Be the first to share football news with the community.</p>
+        <a href="{% url 'main:add_product' %}" class="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors">
+          Add product
+        </a>
+      </div>
+    {% else %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for product in product_list %}
+          {% include 'card_product.html' with product=product %}
+        {% endfor %}
+      </div>
+    {% endif %}
+...
+```
+## Urutan prioritas pengambilan CSS selector👆🏻
+Misal
+```html
+<html>
+<head>
+  <style>
+    #demo {color: blue;} 
+    .test {color: green;}
+    p {color: red;}
+  </style>
+</head>
+<body>
+
+<p id="demo" class="test" style="color: pink;">Hello World!</p>
+
+</body>
+</html>
+```
+Maka prioritas selectorsnya yaitu:
+1. Inline style, override semua selectors. Dari contoh diatas: style="color: pink;"
+2. Id selectors, #demo {color: blue;}
+3. Class selectors, .test {color: green;}
+4. Element selectors, p {color: red;}
+5. Universal selector dan :where(), * dan where()
+
+## Responsive design💻
+Responsive web design (RWD) adalah pendekatan desain web untuk membuat halaman web page dapat ter-render dengan baik di semua ukuran layar dan resolusi dengan tetap mempertahankan good usability. RWD merupakan hal yang penting karena memberikan beberapa benefit diantaranya sebagai berikut.
+1. User experience akan meningkat karena ukuran halaman akan menyesuaikan device sehingga user dapat bernavigasi dengan mudah.
+2. Web juga akan lebih menjangkau banyak orang, karena tidak semua orang memiliki PC ataupun akan membuka web di PC.
+3. Cost effective, karena tidak perlu membangun banyak versi web untuk setiap device.
+4. Maintenace lebih mudah, karena tidak perlu mengelola berbagai versi web untuk setiap device.
+5. Competitive advantage, menawarkan experience yang seamless antar device.
+Aplikasi yang sudah menerapkan responsive design: Instagram
+Aplikasi yang belum menerapkan responsive design: SIAK NG
+
+## Margin, border, dan padding🧥
+Box model pada CSS pada dasarnya merupakan suatu box yang membungkus setiap elemen HTML dan terdiri atas:
+
+<img width="948" height="400" alt="Screen Shot 2025-09-30 at 19 10 23" src="https://github.com/user-attachments/assets/e27e93e0-ab3f-43c8-860e-5b01b0c39cb5" />
+1. Content: isi dari box (tempat terlihatnya teks dan gambar)
+2. Padding: mengosongkan area di sekitar konten (transparan)
+3. Border: garis tepian yang membungkus konten dan padding-nya
+4. Margin: mengosongkan area di sekitar border (transparan)
+
+Contoh implementasinya yaitu
+``` css
+div {
+  width: 320px;
+  height: 50px;
+  padding: 10px;
+  border: 5px solid gray;
+  margin: 0;
+}
+```
+
+## Flex box dan grid layout📦
+Flexbox adalah metode layout untuk mengatur item berdasarkan baris ATAU kolom. Grid layout menghadirkan sistem layout grid-based, with rows DAN columns. Flexbox digunakan untuk layout satu dimensi, sedangkan grid layout digunakan untuk layout dua dimensi. Oleh karena itu, Flexbox cocok digunakan untuk membuat layout web yang kompleks. Kedua metode tersebut mempermudah desain struktur layout yang responsif, tanpa menggunakan float atau positioning. 
+</details>
