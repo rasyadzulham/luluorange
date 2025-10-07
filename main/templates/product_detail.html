@@ -44,25 +44,25 @@
                 <div class="px-6 sm:px-8">
                     <img src="{{ product.thumbnail }}" 
                          alt="{{ product.name }}" 
-                         class="w-auto h-64 sm:h-80 lg:h-96 object-cover rounded-lg">
+                         class="w-auto h-64 sm:h-80 lg:h-96 object-cover rounded-lg product-thumbnail">
                 </div>
             {% endif %}
 
             <div class="p-6 sm:p-8 space-y-0">
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight product-name">
                     {{ product.name }}
                 </h1>
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 leading-tight mb-4">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 leading-tight mb-4 product-price">
                     IDR {{ product.price }}
                 </h2>
-                <h2 class="text-l sm:text-xl font-bold text-gray-900 leading-tight mb-4">
+                <h2 class="text-l sm:text-xl font-bold text-gray-900 leading-tight mb-4 product-rating">
                     ⭐️ {{ product.rating }}
                 </h2>
             </div>
 
             <!-- Content -->
             <div class="px-6 pb-6 sm:px-8">
-                <div class="text-gray-700 leading-relaxed whitespace-normal text-base sm:text-lg">
+                <div class="text-gray-700 leading-relaxed whitespace-normal text-base sm:text-lg product-description">
                         {{ product.description }}
                 </div>
             </div>

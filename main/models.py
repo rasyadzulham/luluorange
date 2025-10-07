@@ -26,4 +26,4 @@ class Product(models.Model):
     
     @property
     def is_product_recommended(self):
-        return self.rating > 4
+        return self.rating > 4.5

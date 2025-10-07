@@ -9,9 +9,12 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core import serializers
 from main.forms import ProductForm
 from main.models import Product
+from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 @login_required(login_url='/login')
 def show_main(request):
@@ -143,8 +146,8 @@ def logout_user(request):
     return response
 
 def edit_product(request, id):
-    news = get_object_or_404(Product, pk=id)
-    form = ProductForm(request.POST or None, instance=news)
+    product = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance=product)
     if form.is_valid() and request.method == 'POST':
         form.save()
         return redirect('main:show_main')
@@ -193,3 +196,44 @@ def delete_product_ajax(request, id):
     product.delete()
 
     return JsonResponse({'success': True, 'message': 'Product deleted successfully.'})
+
+@csrf_exempt
+@require_POST
+def edit_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance=product)
+
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'success': True, 'message': 'Product updated successfully!'})
+
+    else:
+        # return error list biar bisa ditampilin di toast atau form
+        errors = form.errors.as_json()
+        return JsonResponse({
+            'success': False,
+            'message': 'Failed to update product.',
+            'errors': errors
+        }, status=400)
+
+@csrf_exempt 
+def update_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            product_data = model_to_dict(product)
+            product_data["category_display"] = product.get_category_display()
+            product_data["is_product_recommended"] = float(product.rating) >= 4.0
+            return JsonResponse({
+                'success': True,
+                'message': 'Product updated successfully!',
+                'product': model_to_dict(product)
+            })
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    else:
+        # untuk prefill modal
+        return JsonResponse(model_to_dict(product))

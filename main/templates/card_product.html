@@ -5,7 +5,7 @@
   <div class="aspect-[16/9] relative">
     {% if product.thumbnail %}
     <div class="max-h-96 overflow-hidden">
-        <img src="{{ product.thumbnail }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+        <img src="{{ product.thumbnail }}" alt="{{ product.name }}" class="w-full h-full object-cover product-thumbnail">
     </div>
     {% else %}
       <div class="w-full h-full bg-gray-200"></div>
@@ -13,7 +13,7 @@
 
     <!-- Category Badge -->
     <div class="absolute top-3 left-3">
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-amber-500 text-white">
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-amber-500 text-white category-badge">
         {{ product.get_category_display }}
       </span>
     </div>
@@ -21,12 +21,12 @@
     <!-- Status Badges -->
     <div class="absolute top-3 right-3 flex space-x-2">
       {% if product.is_featured %}
-        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800 product-is_featured">
           Featured
         </span>
       {% endif %}
       {% if product.is_product_recommended %}
-        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800 product-is_recommended">
           Loved by everyone!
         </span>
       {% endif %}
@@ -37,13 +37,13 @@
   <div class="p-5">
 
     <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
-      <a href="{% url 'main:show_product' product.id %}" class="hover:text-pink-500 transition-colors">
+      <a href="{% url 'main:show_product' product.id %}" class="hover:text-pink-500 transition-colors product-name">
         {{ product.name }}
       </a>
-      <p class="text-orange-600 text-sm leading-relaxed line-clamp-3">
+      <p class="text-orange-600 text-sm leading-relaxed line-clamp-3 product-price">
         IDR {{ product.price }}
       </p>
-      <p class="text-grey-600 text-sm leading-relaxed line-clamp-3">
+      <p class="text-grey-600 text-sm leading-relaxed line-clamp-3 product-rating">
         ⭐️ {{ product.rating }}
       </p>
     </h3>
@@ -55,7 +55,9 @@
           See Details →
         </a>
         <div class="flex space-x-2">
-          <a href="{% url 'main:edit_product' product.id %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">
+          <a href="#" 
+            class="text-gray-600 hover:text-gray-700 text-sm transition-colors edit-btn" 
+            data-id="{{ product.id }}">
             Edit
           </a>
           <a href="{% url 'main:delete_product_ajax' product.id %}" 
