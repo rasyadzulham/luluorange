@@ -1,14 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib import messages
 import datetime
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core import serializers
 from main.forms import ProductForm
 from main.models import Product
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.html import strip_tags
 
 @login_required(login_url='/login')
 def show_main(request):
@@ -73,8 +76,21 @@ def show_xml(request):
 
 def show_json(request):
      product_list = Product.objects.all()
-     json_data = serializers.serialize("json", product_list)
-     return HttpResponse(json_data, content_type="application/json")
+     data = [
+        {
+            'id': str(product.id),
+            'name': product.name,
+            'price': product.price,
+            'category': product.category,
+            'thumbnail': product.thumbnail,
+            'rating': product.rating,
+            'description': product.description,
+            'is_featured': product.is_featured,
+            'user': product.user,
+        }
+        for product in product_list
+        ]
+     return JsonResponse(data, safe=False)
 
 def show_xml_by_id(request, product_id):
     try:
@@ -143,3 +159,37 @@ def delete_product(request, id):
     product = get_object_or_404(Product, pk=id)
     product.delete()
     return HttpResponseRedirect(reverse('main:show_main'))
+
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+    name = strip_tags(request.POST.get("name")) # strip HTML tags!
+    description = strip_tags(request.POST.get("description")) # strip HTML tags!
+    category = request.POST.get("category")
+    thumbnail = request.POST.get("thumbnail")
+    is_featured = request.POST.get("is_featured") == 'on'  # checkbox handling
+    user = request.user
+    price = request.POST.get("price")
+    rating = request.POST.get("rating")
+
+    new_product = Product(
+        name=name, 
+        description=description,
+        category=category,
+        thumbnail=thumbnail,
+        is_featured=is_featured,
+        user=user,
+        price=price,
+        rating=rating
+    )
+    new_product.save()
+
+    return HttpResponse(b"CREATED", status=201)
+
+@csrf_exempt
+@require_POST
+def delete_product_ajax(request, id):
+    product = get_object_or_404(Product, pk=id)
+    product.delete()
+
+    return JsonResponse({'success': True, 'message': 'Product deleted successfully.'})
