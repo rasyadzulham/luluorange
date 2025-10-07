@@ -31,7 +31,7 @@ def show_main(request):
     elif filter_type == "aksesoris":
         product_list = Product.objects.filter(category='aksesoris')
     elif filter_type == "bola":
-        product_list = Product.objects.filter(category='aksesoris')
+        product_list = Product.objects.filter(category='bola')
     else:
         product_list = Product.objects.filter(user=request.user)
 
@@ -165,56 +165,11 @@ def delete_product(request, id):
 
 @csrf_exempt
 @require_POST
-def add_product_entry_ajax(request):
-    name = strip_tags(request.POST.get("name")) # strip HTML tags!
-    description = strip_tags(request.POST.get("description")) # strip HTML tags!
-    category = request.POST.get("category")
-    thumbnail = request.POST.get("thumbnail")
-    is_featured = request.POST.get("is_featured") == 'on'  # checkbox handling
-    user = request.user
-    price = request.POST.get("price")
-    rating = request.POST.get("rating")
-
-    new_product = Product(
-        name=name, 
-        description=description,
-        category=category,
-        thumbnail=thumbnail,
-        is_featured=is_featured,
-        user=user,
-        price=price,
-        rating=rating
-    )
-    new_product.save()
-
-    return HttpResponse(b"CREATED", status=201)
-
-@csrf_exempt
-@require_POST
 def delete_product_ajax(request, id):
     product = get_object_or_404(Product, pk=id)
     product.delete()
 
     return JsonResponse({'success': True, 'message': 'Product deleted successfully.'})
-
-@csrf_exempt
-@require_POST
-def edit_product_ajax(request, id):
-    product = get_object_or_404(Product, pk=id)
-    form = ProductForm(request.POST or None, instance=product)
-
-    if form.is_valid():
-        form.save()
-        return JsonResponse({'success': True, 'message': 'Product updated successfully!'})
-
-    else:
-        # return error list biar bisa ditampilin di toast atau form
-        errors = form.errors.as_json()
-        return JsonResponse({
-            'success': False,
-            'message': 'Failed to update product.',
-            'errors': errors
-        }, status=400)
 
 @csrf_exempt 
 def update_product_ajax(request, id):
@@ -237,3 +192,21 @@ def update_product_ajax(request, id):
     else:
         # untuk prefill modal
         return JsonResponse(model_to_dict(product))
+    
+@login_required(login_url='/login')
+def add_product_ajax(request):
+    if request.method == "POST":
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product_entry = form.save(commit=False)
+            product_entry.user = request.user
+            product_entry.save()
+            return JsonResponse({
+                'success': True,
+                'product': model_to_dict(product_entry),
+                'html': render_to_string('card_product.html', {'product': product_entry, 'user': request.user})
+            })
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+        
+    return JsonResponse({"success": False, "message": "Invalid request"}, status=400)

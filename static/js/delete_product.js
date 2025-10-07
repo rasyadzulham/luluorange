@@ -65,13 +65,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.getAttribute('data-id');
-            const url = this.getAttribute('href');
-            showModal(productId, url);
-        });
+    document.addEventListener("click", function(e) {
+        const btn = e.target.closest(".delete-btn");
+        if (!btn) return;
+
+        e.preventDefault();
+        const productId = btn.getAttribute('data-id');
+        const url = btn.getAttribute('data-url');
+        showModal(productId, url);
+        
     });
 });
 
