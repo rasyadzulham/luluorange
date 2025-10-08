@@ -77,22 +77,44 @@ def show_xml(request):
      xml_data = serializers.serialize("xml", product_list)
      return HttpResponse(xml_data, content_type="application/xml")
 
+from django.http import JsonResponse
+from .models import Product 
+# Pastikan Anda sudah mengimpor model Product Anda di bagian atas views.py
+
 def show_json(request):
      product_list = Product.objects.all()
-     data = [
-        {
-            'id': str(product.id),
+     
+     data = []
+     for product in product_list:
+        
+        # Penanganan User (mengambil ID dan username, bukan objek User)
+        if product.user:
+            user_id = product.user.pk
+            owner_name = product.user.username
+        else:
+            user_id = None
+            owner_name = 'Anonymous'
+        
+        # Penanganan Thumbnail (mengambil URL, bukan objek FileField)
+        image_url = product.thumbnail if product.thumbnail else ''
+        
+        data.append({
+            'id': str(product.id), # ID harus string
+            'user_id': user_id,
+            'owner_name': owner_name, # Digunakan di JS untuk menampilkan nama pemilik
+            
             'name': product.name,
             'price': product.price,
             'category': product.category,
-            'thumbnail': product.thumbnail,
-            'rating': product.rating,
+            # Pastikan field ini ada dan ditangani jika mungkin None
+            'rating': product.rating if product.rating is not None else 0, 
             'description': product.description,
             'is_featured': product.is_featured,
-            'user': product.user,
-        }
-        for product in product_list
-        ]
+            
+            'image_url': image_url, # Key 'image_url' digunakan di JS frontend
+        })
+        
+     # safe=False karena kita mengembalikan list, bukan dictionary utama
      return JsonResponse(data, safe=False)
 
 def show_xml_by_id(request, product_id):
@@ -194,19 +216,21 @@ def update_product_ajax(request, id):
         return JsonResponse(model_to_dict(product))
     
 @login_required(login_url='/login')
+@require_POST
 def add_product_ajax(request):
-    if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product_entry = form.save(commit=False)
-            product_entry.user = request.user
-            product_entry.save()
-            return JsonResponse({
-                'success': True,
-                'product': model_to_dict(product_entry),
-                'html': render_to_string('card_product.html', {'product': product_entry, 'user': request.user})
-            })
-        else:
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    # Cek apakah metode POST sudah diatur oleh require_POST
+    form = ProductForm(request.POST)
+    if form.is_valid():
+        product_entry = form.save(commit=False)
+        product_entry.user = request.user
+        product_entry.save()
         
-    return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
+        # RESPONSE SUKSES YANG MINIMALIS
+        return JsonResponse({
+            'success': True,
+            'product_id': str(product_entry.id),
+        }, status=200) # Status 200 OK untuk sukses
+    else:
+        # Pastikan response error menggunakan status 400
+        # dan mengirim error details
+        return JsonResponse({'success': False, 'errors': form.errors}, status=400)

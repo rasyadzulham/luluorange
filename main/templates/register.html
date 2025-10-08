@@ -39,7 +39,7 @@
         </div>
       {% endif %}
 
-      <form method="POST" action="" class="space-y-5">
+      <form id="register-form" method="POST" action="" class="space-y-5">
         {% csrf_token %}
         
         <div>
@@ -76,11 +76,86 @@
         </div>
 
         <button 
+          id="register-submit"
           type="submit" 
           class="w-full bg-amber-500 text-white font-medium py-3 px-4 rounded hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200">
           Create Account
         </button>
       </form>
+
+      <script>
+        // AJAX register using fetch and showToast from toast.js
+        document.addEventListener('DOMContentLoaded', function () {
+          const form = document.getElementById('register-form');
+          const submitBtn = document.getElementById('register-submit');
+          if (!form) return;
+
+          function getCSRFToken() {
+            const cookieValue = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+            return cookieValue ? cookieValue.split('=')[1] : '';
+          }
+
+          form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Creating...';
+
+            try {
+              const resp = await fetch(form.action || window.location.href, {
+                method: 'POST',
+                headers: {
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'X-CSRFToken': getCSRFToken(),
+                  'Accept': 'application/json'
+                },
+                body: formData,
+                credentials: 'same-origin'
+              });
+
+              const contentType = resp.headers.get('content-type') || '';
+              const isJSON = contentType.includes('application/json');
+
+              if (isJSON) {
+                let data = null;
+                try { data = await resp.json(); } catch (err) { data = null; }
+
+                if (resp.ok && data && data.success) {
+                  if (typeof showToast === 'function') showToast('Account created', data.message || 'Registration successful', 'success');
+                  if (data.redirect_url) {
+                    setTimeout(() => window.location.href = data.redirect_url, 800);
+                  } else {
+                    setTimeout(() => window.location.reload(), 800);
+                  }
+                } else {
+                  if (data && data.errors) {
+                    const message = Array.isArray(data.errors) ? data.errors.join('\n') : (data.errors || 'Registration failed');
+                    if (typeof showToast === 'function') showToast('Registration failed', message, 'error');
+                  } else if (data && data.message) {
+                    if (typeof showToast === 'function') showToast('Registration failed', data.message, 'error');
+                  } else {
+                    if (typeof showToast === 'function') showToast('Registration failed', 'Unable to register. Please check your input.', 'error');
+                  }
+                }
+              } else {
+                if (resp.redirected) {
+                  if (typeof showToast === 'function') showToast('Account created', 'Registration successful', 'success');
+                  setTimeout(() => window.location.href = resp.url, 800);
+                } else {
+                  if (typeof showToast === 'function') showToast('Registration failed', 'Unable to register. Please check your input.', 'error');
+                }
+              }
+            } catch (err) {
+              console.error('Register error', err);
+              if (typeof showToast === 'function') showToast('Register error', 'Unable to reach server. Try again later.', 'error');
+            } finally {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+            }
+          });
+        });
+      </script>
 
       <!-- Messages Display -->
       {% if messages %}

@@ -38,7 +38,7 @@
         </div>
       {% endif %}
 
-      <form method="POST" action="" class="space-y-6">
+      <form id="login-form" method="POST" action="" class="space-y-6">
         {% csrf_token %}
         
         <div>
@@ -64,11 +64,97 @@
         </div>
 
         <button 
+          id="login-submit"
           type="submit" 
           class="w-full bg-amber-500 text-white font-medium py-3 px-4 rounded-md hover:bg-amber-600 transition-colors">
           Login
         </button>
       </form>
+
+      <script>
+        // AJAX login using fetch and showToast from toast.js
+        // Wait for DOMContentLoaded so toast.js (included after the content) is available
+        document.addEventListener('DOMContentLoaded', function () {
+          const form = document.getElementById('login-form');
+          const submitBtn = document.getElementById('login-submit');
+
+          if (!form) return;
+
+          function getCSRFToken() {
+            const cookieValue = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+            return cookieValue ? cookieValue.split('=')[1] : '';
+          }
+
+          form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            // Disable button during submit
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Signing in...';
+
+            try {
+              const resp = await fetch(form.action || window.location.href, {
+                method: 'POST',
+                headers: {
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'X-CSRFToken': getCSRFToken(),
+                  'Accept': 'application/json',
+                },
+                body: formData,
+                credentials: 'same-origin'
+              });
+
+              // Inspect content type to decide how to handle response
+              const contentType = resp.headers.get('content-type') || '';
+              const isJSON = contentType.includes('application/json');
+
+              if (isJSON) {
+                let data = null;
+                try { data = await resp.json(); } catch (err) { data = null; }
+
+                if (resp.ok && data && data.success) {
+                  if (typeof showToast === 'function') showToast('Logged in', data.message || 'Login successful', 'success');
+                  if (data.redirect_url) {
+                    setTimeout(() => window.location.href = data.redirect_url, 600);
+                  } else {
+                    setTimeout(() => window.location.reload(), 600);
+                  }
+                } else {
+                  // JSON response but not successful -> show server-provided errors
+                  if (data && data.errors) {
+                    const message = Array.isArray(data.errors) ? data.errors.join('\n') : (data.errors || 'Login failed');
+                    if (typeof showToast === 'function') showToast('Login failed', message, 'error');
+                  } else if (data && data.message) {
+                    if (typeof showToast === 'function') showToast('Login failed', data.message, 'error');
+                  } else {
+                    if (typeof showToast === 'function') showToast('Login failed', 'Invalid credentials or server rejected login.', 'error');
+                  }
+                }
+              } else {
+                // Non-JSON response: check if fetch followed a redirect (successful login often redirects)
+                if (resp.redirected) {
+                  // Redirected to another page (likely successful login)
+                  if (typeof showToast === 'function') showToast('Logged in', 'Login successful', 'success');
+                  // short delay so user sees toast, then navigate
+                  setTimeout(() => window.location.href = resp.url, 600);
+                } else {
+                  // No JSON and no redirect -> probably returned the login page again (failed login)
+                  if (typeof showToast === 'function') showToast('Login failed', 'Invalid username or password.', 'error');
+                }
+              }
+            } catch (err) {
+              console.error('Login error', err);
+              if (typeof showToast === 'function') showToast('Login error', 'Unable to reach server. Try again later.', 'error');
+            } finally {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+            }
+          });
+        });
+      </script>
 
       <!-- Messages Display -->
       {% if messages %}

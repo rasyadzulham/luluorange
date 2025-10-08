@@ -17,9 +17,6 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch(addProductUrl, {
       method: "POST",
       body: formData,
-      headers: {
-        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-      }
     })
     .then(res => res.json())
     .then(data => {
@@ -28,9 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
         addModal.classList.add("hidden");
         addForm.reset();
 
-        // inject card baru ke halaman
-        const productList = document.getElementById("product-list");
-        productList.insertAdjacentHTML("afterbegin", data.html);
+        document.dispatchEvent(new CustomEvent('productUpdated'));
       } else {
         showToast("Error", "Failed to add product.", "error");
         console.error(data.errors);

@@ -10,55 +10,62 @@
 <div class="bg-gray-50 w-full pt-16 min-h-screen">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- Header Section -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">The Latest Clothes and Apparels</h1>
       <p class="text-gray-600">For your football lifestyle</p>
     </div>
 
-    <!-- Filter Section -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-white rounded-lg border border-gray-200 p-4">
       <div class="flex space-x-3 mb-4 sm:mb-0">
-        <a href="?" class="{% if request.GET.filter == 'all' or not request.GET.filter  %} bg-amber-500 text-white{% else %}bg-white text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md font-medium transition-colors hover:bg-amber-500 hover:text-white">
+        <a id="filter-all" class="px-4 py-2 rounded-md font-medium transition-colors cursor-pointer">
           All Product
         </a>
-        <a href="?filter=my" class="{% if request.GET.filter == 'my' %} bg-amber-500 text-white{% else %}bg-white text-gray-700 border border-gray-300{% endif %} px-4 py-2 rounded-md font-medium transition-colors hover:bg-amber-500 hover:text-white">
+        <a id="filter-my" class="px-4 py-2 rounded-md font-medium transition-colors cursor-pointer">
           My Product
         </a>
+        <button id="refresh-products" type="button" class="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors text-xl">
+          Refresh
+        </button>
       </div>
       {% if user.is_authenticated %}
       <div class="text-sm text-gray-500">
           Last login: {{ last_login }}
       </div>
       {% endif %}
-      
     </div>
 
+    <div id="loading" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden">
+      <svg class="animate-spin h-8 w-8 text-amber-500 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <p class="text-gray-600 mt-3">Loading products...</p>
+    </div>
 
-    <!-- Product Grid -->
-    {% if not product_list %}
-      <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-        <div class="w-32 h-32 mx-auto mb-4">
-          <img src="{% static 'image/no-product.png' %}" alt="No products available" class="w-full h-full object-contain">
-        </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No product found</h3>
-        <p class="text-gray-500 mb-6">Be the first to share football news with the community.</p>
-        <a href="{% url 'main:add_product' %}" class="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors">
-          Add product
-        </a>
+    <div id="error" class="hidden">
+      <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg" role="alert">
+        <p class="font-bold">Error</p>
+        <p>Failed to load product list. Please try again later.</p>
       </div>
-    {% else %}
-      <div id="product-list" div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for product in product_list %}
-          {% include 'card_product.html' with product=product %}
-        {% endfor %}
+    </div>
+
+    <div id="product-list-container" class="hidden">
       </div>
-    {% endif %}
+    
+    <div id="empty" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden">
+      <div class="w-32 h-32 mx-auto mb-4">
+        <img src="{% static 'image/no-product.png' %}" alt="No products available" class="w-full h-full object-contain">
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No product found</h3>
+      <p class="text-gray-500 mb-6">Be the first to share your apparel with the community.</p>
+      <a href="{% url 'main:add_product' %}" class="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition-colors">
+        Add product
+      </a>
+    </div>
+
   </div>
 </div>
 
-<!-- Modal konformasi delete product -->
- 
 {% include 'modal_add_product.html' %}
 <script src="{% static 'js/add_product.js' %}"></script>
 
@@ -68,5 +75,339 @@
 {% include 'modal_edit_product.html' %}
 <script src="{% static 'js/edit_product.js' %}"></script>
 
+<script>
+// ===============================================
+// AJAX and DOM Logic for Product List Filtering
+// ===============================================
+
+const PRODUCT_API_ENDPOINT = "{% url 'main:show_json' %}"; 
+const CURRENT_USER_ID = "{{ user.id|default_if_none:'' }}"; 
+const STATIC_URL = "{% static '' %}";
+
+// DOM Elements
+const loadingSpinner = document.getElementById('loading');
+const errorMessage = document.getElementById('error');
+const emptyStateDisplay = document.getElementById('empty');
+const productListContainer = document.getElementById('product-list-container');
+const showAllProductsButton = document.getElementById('filter-all');
+const showMyProductsButton = document.getElementById('filter-my');
+
+// State Variables
+let activeFilter = 'all'; // 'all' or 'my'
+let activeCategoryFilter = null; // 'atasan', 'bawahan', null (all categories)
+let allProductsData = [];
+
+// --- Helper Functions ---
+
+// 1. Update filter button appearance
+function updateFilterButtonsAppearance() {
+  const activeClass = 'bg-amber-500 text-white';
+  const inactiveClass = 'bg-white text-gray-700 border border-gray-300';
+  const hoverClass = 'hover:bg-amber-500 hover:text-white';
+  
+  if (activeFilter === 'all') {
+    showAllProductsButton.className = `${activeClass} px-4 py-2 rounded-md font-medium transition-colors ${hoverClass}`;
+    showMyProductsButton.className = `${inactiveClass} px-4 py-2 rounded-md font-medium transition-colors ${hoverClass}`;
+  } else {
+    showMyProductsButton.className = `${activeClass} px-4 py-2 rounded-md font-medium transition-colors ${hoverClass}`;
+    showAllProductsButton.className = `${inactiveClass} px-4 py-2 rounded-md font-medium transition-colors ${hoverClass}`;
+  }
+}
+
+// 2. Show/hide page sections
+function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+  loadingSpinner.classList.toggle('hidden', !showLoading);
+  errorMessage.classList.toggle('hidden', !showError);
+  emptyStateDisplay.classList.toggle('hidden', !showEmpty);
+  productListContainer.classList.toggle('hidden', !showGrid);
+  
+  // Add grid classes when showing grid
+  if (showGrid) {
+    productListContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+  }
+}
+
+// 3. Build product card (SESUAIKAN DENGAN card_product.html ANDA YANG TERAKHIR)
+function getReadableCategoryDisplay(categoryCode) {
+  // Mapping kategori manual
+  const categoryMapping = {
+    'atasan': 'Atasan',
+    'bawahan': 'Bawahan',
+    'sepatu': 'Sepatu',
+    'aksesoris': 'Aksesoris',
+    'bola': 'Bola',
+  };
+  return categoryMapping[categoryCode] || categoryCode;
+}
+
+function buildProductCardElement(product) {
+    const productId = product.id;
+    // Gunakan URL yang benar sesuai urls.py Anda
+    const linkDetail = `{% url 'main:show_product' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', productId);
+    const linkDeleteAjax = `{% url 'main:delete_product_ajax' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', productId);
+    const linkEditAjax = `{% url 'main:update_product_ajax' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', productId);
+
+    // Asumsi properti dari objek product JSON:
+    const name = product.name || 'No Name';
+    const price = product.price || 0;
+    const rating = product.rating || 0;
+    const category = product.category || 'N/A';
+    const isFeatured = product.is_featured || false;
+    // ASUMSI: Anda menambahkan is_product_recommended ke JSON
+    const isRecommended = product.is_product_recommended || false; 
+    // Menggunakan key 'image_url' dari JSON yang sudah diperbaiki
+    const imageUrl = product.image_url || `${STATIC_URL}image/placeholder.png`;
+    const ownerId = product.user_id; 
+
+    const isOwner = CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(ownerId);
+    
+    // --- Badges ---
+    const categoryLabel = getReadableCategoryDisplay(category);
+    const featuredBadge = isFeatured ? `
+        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800 product-is_featured">
+            Featured
+        </span>` : '';
+    
+    const recommendedBadge = isRecommended ? ` 
+        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800 product-is_recommended">
+            Loved by everyone!
+        </span>` : '';
+
+    // --- Action Buttons ---
+    let actionButtonsHtml;
+    if (isOwner) {
+        actionButtonsHtml = `
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                <a href="${linkDetail}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition-colors">
+                    See Details →
+                </a>
+                <div class="flex space-x-2">
+                    <button type="button"
+                        class="text-gray-600 hover:text-gray-700 text-sm transition-colors edit-btn"
+                        data-id="${productId}"
+                        data-url="${linkEditAjax}"
+                        onclick="openEditModal('${productId}')">
+                        Edit
+                    </button>
+                    <a href="#" 
+                        class="delete-btn text-red-600 hover:text-red-700 text-sm transition-colors"
+                        data-id="${productId}"
+                        data-url="${linkDeleteAjax}"
+                        onclick="openDeleteModal('${productId}')">
+                        Delete
+                    </a>
+                </div>
+            </div>
+        `;
+    } else {
+        actionButtonsHtml = `
+            <div class="pt-4 border-t border-gray-100">
+                <a href="${linkDetail}" class="text-amber-500 hover:text-amber-600 font-medium text-sm transition-colors">
+                    See Details →
+                </a>
+            </div>
+        `;
+    }
+
+    // --- Struktur Card Utama ---
+    const cardHtml = `
+        <div id="product-${productId}">
+            <article class="bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+                <div class="aspect-[16/9] relative">
+                    ${imageUrl ? `
+                    <div class="max-h-96 overflow-hidden">
+                        <img src="${imageUrl}" alt="${name}" class="w-full h-full object-cover product-thumbnail">
+                    </div>` : `
+                    <div class="w-full h-full bg-gray-200"></div>
+                    `}
+
+                    <div class="absolute top-3 left-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-amber-500 text-white category-badge">
+                            ${categoryLabel}
+                        </span>
+                    </div>
+
+                    <div class="absolute top-3 right-3 flex space-x-2">
+                        ${featuredBadge}
+                        ${recommendedBadge}
+                    </div>
+                </div>
+
+                <div class="p-5">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
+                        <a href="${linkDetail}" class="hover:text-pink-500 transition-colors product-name">
+                            ${name}
+                        </a>
+                        <p class="text-orange-600 text-sm leading-relaxed line-clamp-3 product-price">
+                            IDR ${price.toLocaleString('id-ID')}
+                        </p>
+                        <p class="text-grey-600 text-sm leading-relaxed line-clamp-3 product-rating">
+                            ⭐️ ${rating}
+                        </p>
+                    </h3>
+
+                    ${actionButtonsHtml}
+                </div>
+            </article>
+        </div>
+    `;
+    
+    const divContainer = document.createElement('div');
+    divContainer.innerHTML = cardHtml.trim();
+    return divContainer.firstChild; 
+}
+
+
+// 4. Render all product cards
+function renderAllProductCards(productItems) {
+  productListContainer.innerHTML = '';
+  productItems.forEach(productItem => {
+    const cardElement = buildProductCardElement(productItem);
+    productListContainer.appendChild(cardElement);
+  });
+}
+
+// 5. Filter and display products
+function filterAndDisplayProducts() {
+  updateFilterButtonsAppearance(); // Memperbarui tombol 'All Product'/'My Product'
+
+  let productsToDisplay = allProductsData;
+  
+  // 1. Filter Berdasarkan 'All Product' atau 'My Product'
+  if (activeFilter === 'my') {
+    productsToDisplay = productsToDisplay.filter(product => 
+      CURRENT_USER_ID && Number(product.user_id) === Number(CURRENT_USER_ID)
+    );
+  }
+  
+  // 2. Filter Berdasarkan Kategori Navigasi
+  if (activeCategoryFilter) {
+    productsToDisplay = productsToDisplay.filter(product => 
+      product.category === activeCategoryFilter
+    );
+  }
+  
+  if (productsToDisplay.length === 0) {
+    // Tampilkan pesan kosong hanya jika tidak ada produk yang cocok dengan filter
+    displayPageSection({ showEmpty: true });
+  } else {
+    renderAllProductCards(productsToDisplay);
+    displayPageSection({ showGrid: true });
+  }
+  
+  // Opsional: Gulirkan ke atas untuk UX yang lebih baik
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 6. Fetch products data from server
+async function fetchProductsFromServer() {
+  try {
+    displayPageSection({ showLoading: true });
+    
+    const response = await fetch(PRODUCT_API_ENDPOINT, {
+      headers: { 'Accept': 'application/json' },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch product data. Status: ${response.status}`);
+    }
+
+    const productData = await response.json();
+    allProductsData = productData || [];
+    
+    filterAndDisplayProducts();
+  } catch (error) {
+    console.error('Error loading products:', error);
+    displayPageSection({ showError: true });
+  }
+}
+
+// 7. Event Handlers
+function handleShowAllProductsClick() {
+  activeFilter = 'all';
+  filterAndDisplayProducts();
+}
+
+function handleShowMyProductsClick() {
+  activeFilter = 'my';
+  filterAndDisplayProducts();
+}
+
+function handleCategoryFilterClick(event) {
+    event.preventDefault(); // Menghentikan navigasi ke href="#"
+    
+    // Ambil nilai data-filter dari elemen yang diklik
+    const category = event.currentTarget.getAttribute('data-filter');
+    
+    // Set filter kategori baru
+    activeCategoryFilter = category;
+    
+    // Pastikan filter utama tetap 'all' saat memfilter kategori
+    // Kita set ke 'all' agar lebih konsisten dan mudah
+    activeFilter = 'all'; 
+    
+    // Perbarui tampilan tombol utama (opsional: agar 'All Product' terlihat aktif)
+    updateFilterButtonsAppearance();
+    
+    // Tampilkan produk yang difilter
+    filterAndDisplayProducts();
+    
+    // Opsional: Tutup mobile menu setelah filter dipilih
+    const menu = document.querySelector(".mobile-menu");
+    if (menu && !menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+    }
+}
+
+
+// --- Initialization ---
+
+// 8. Initialize page
+function initializeProductPage() {
+  showAllProductsButton.addEventListener('click', handleShowAllProductsClick);
+  showMyProductsButton.addEventListener('click', handleShowMyProductsClick);
+  
+  // Tambahkan event listeners untuk tombol kategori
+  const categoryButtons = document.querySelectorAll('.filter-category-btn');
+  categoryButtons.forEach(button => {
+    button.addEventListener('click', handleCategoryFilterClick);
+  });
+
+  // Ambil data awal saat halaman dimuat
+  fetchProductsFromServer();
+
+  // Refresh button handler
+  const refreshButton = document.getElementById('refresh-products');
+  if (refreshButton) {
+    refreshButton.addEventListener('click', async function () {
+      // disable while fetching
+      refreshButton.disabled = true;
+      const originalText = refreshButton.textContent;
+      refreshButton.textContent = 'Refreshing...';
+      try {
+        await fetchProductsFromServer();
+      } catch (e) {
+        // fetchProductsFromServer already handles errors and UI; optionally log
+        console.error('Refresh failed', e);
+      } finally {
+        refreshButton.disabled = false;
+        refreshButton.textContent = originalText;
+      }
+    });
+  }
+}
+
+// 9. Add event listener to detect successful CRUD operations
+document.addEventListener('productUpdated', function() {
+    console.log('Product data updated. Refreshing list...');
+    fetchProductsFromServer();
+});
+
+
+// Start application
+initializeProductPage();
+
+// Asumsi: openEditModal dan openDeleteModal sudah didefinisikan di skrip modal Anda.
+</script>
 
 {% endblock content %}
