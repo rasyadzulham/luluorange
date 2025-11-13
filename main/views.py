@@ -15,10 +15,13 @@ from django.views.decorators.http import require_POST
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 from django.http import JsonResponse
+import requests
+import json
 
 @login_required(login_url='/login')
 def show_main(request):
     filter_type = request.GET.get("filter", "all")  # default 'all'
+    sort_type = request.GET.get("sort", None) 
 
     if filter_type == "all":
         product_list = Product.objects.all()
@@ -35,6 +38,11 @@ def show_main(request):
     else:
         product_list = Product.objects.filter(user=request.user)
 
+    if sort_type == "asc":
+        product_list = product_list.order_by('price')
+    elif sort_type == "desc":
+        product_list = product_list.order_by('-price')
+
     context = {
         'npm' : '2406348540',
         'name': request.user.username,
@@ -42,6 +50,7 @@ def show_main(request):
         'class': 'PBP D',
         'product_list': product_list,
         'last_login': request.COOKIES.get('last_login', 'Never'),
+
     }
 
     return render(request, "main.html", context)
@@ -234,3 +243,50 @@ def add_product_ajax(request):
         # Pastikan response error menggunakan status 400
         # dan mengirim error details
         return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = strip_tags(data.get("name", ""))  # Strip HTML tags
+        description = strip_tags(data.get("description", ""))  # Strip HTML tags
+        category = data.get("category", "")
+        imageUrl = data.get("imageUrl", "")
+        is_featured = data.get("is_featured", False)
+        rating = data.get("rating", 0)
+        price = data.get("price", 0)
+        user = request.user
+        
+        new_product = Product(
+            name=name, 
+            description=description,
+            category=category,
+            thumbnail=imageUrl,
+            is_featured=is_featured,
+            rating=rating,
+            price=price,
+            user=user,
+        )
+        new_product.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
