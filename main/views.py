@@ -290,3 +290,44 @@ def create_product_flutter(request):
         return JsonResponse({"status": "success"}, status=200)
     else:
         return JsonResponse({"status": "error"}, status=401)
+
+@login_required(login_url='/login') # Memaksa user harus login
+def get_my_products_json(request):
+    my_products = Product.objects.filter(user=request.user)
+    
+    # # Serialisasi data
+    # data = serializers.serialize('json', my_products)
+    # return JsonResponse(data, safe=False)
+
+    data = []
+    for product in my_products:
+        
+        # Penanganan User (mengambil ID dan username, bukan objek User)
+        if product.user:
+            user_id = product.user.pk
+            owner_name = product.user.username
+        else:
+            user_id = None
+            owner_name = 'Anonymous'
+        
+        # Penanganan Thumbnail (mengambil URL, bukan objek FileField)
+        image_url = product.thumbnail if product.thumbnail else ''
+        
+        data.append({
+            'id': str(product.id), # ID harus string
+            'user_id': user_id,
+            'owner_name': owner_name, # Digunakan di JS untuk menampilkan nama pemilik
+            
+            'name': product.name,
+            'price': product.price,
+            'category': product.category,
+            # Pastikan field ini ada dan ditangani jika mungkin None
+            'rating': product.rating if product.rating is not None else 0, 
+            'description': product.description,
+            'is_featured': product.is_featured,
+            
+            'image_url': image_url, # Key 'image_url' digunakan di JS frontend
+        })
+        
+    # safe=False karena kita mengembalikan list, bukan dictionary utama
+    return JsonResponse(data, safe=False)
