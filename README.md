@@ -1148,3 +1148,53 @@ div {
 ## Flex box dan grid layout📦
 Flexbox adalah metode layout untuk mengatur item berdasarkan baris ATAU kolom. Grid layout menghadirkan sistem layout grid-based, with rows DAN columns. Flexbox digunakan untuk layout satu dimensi, sedangkan grid layout digunakan untuk layout dua dimensi. Oleh karena itu, Flexbox cocok digunakan untuk membuat layout web yang kompleks. Kedua metode tersebut mempermudah desain struktur layout yang responsif, tanpa menggunakan float atau positioning. 
 </details>
+
+<details>
+<summary>Tugas 6</summary>
+
+## Perbedaan antara synchronous request and asynchronous request🤲🏻
+Perbedaan mendasar antara synchronous request (permintaan sinkron) dan asynchronous request (permintaan asinkron) terletak pada cara program menangani waktu tunggu respons: pada permintaan sinkron, program akan berhenti (memblokir) dan harus menunggu hingga permintaan selesai dan respons diterima sebelum dapat melanjutkan ke tugas berikutnya, yang dapat membuat aplikasi terasa lambat atau tidak responsif; sebaliknya, pada permintaan asinkron, program segera melanjutkan ke tugas-tugas lain tanpa menunggu respons, biasanya menggunakan mekanisme seperti callback atau Promise untuk memberitahu program apa yang harus dilakukan setelah respons datang, sehingga meningkatkan efisiensi dan responsivitas aplikasi, terutama saat berhadapan dengan operasi Input/Output (I/O) yang memakan waktu lama seperti permintaan jaringan.
+
+## Alur AJAX♻️
+### Sisi Klien (Browser/JavaScript)
+1. Pemicu (Event), Sebuah tindakan pengguna (misalnya, mengklik tombol Like, mengisi formulir, atau scrolling halaman) memicu kode JavaScript.
+2. Membuat Permintaan Asinkron, JavaScript (menggunakan objek XMLHttpRequest, Fetch API, atau pustaka seperti jQuery $.ajax()) membuat permintaan HTTP baru (biasanya GET atau POST).
+3. Pengiriman Data (Opsional), Data yang dibutuhkan (misalnya, ID produk, teks komentar, atau data formulir) diserialisasi dan dikirim bersama permintaan.
+4. Menambahkan Keamanan (CSRF Token), Untuk permintaan POST, PUT, atau DELETE, JavaScript harus menyertakan CSRF token (diambil dari cookie atau tag template Django) dalam header permintaan untuk melewati mekanisme keamanan bawaan Django.
+
+### Sisi Server (Django)
+1. Penerimaan Permintaan, Server Django menerima request HTTP.
+2. Pemrosesan Middleware, Request melewati Middleware Django. Middleware seperti CsrfViewMiddleware akan memvalidasi CSRF token (untuk permintaan non-GET).
+3. Pemetaan URL, Sistem URLconf (di urls.py) Django mencocokkan URL dari request AJAX dengan fungsi View yang sesuai.
+4. Pemrosesan View, Fungsi View dijalankan.
+   - Identifikasi AJAX, Fungsi View dapat memeriksa atribut request untuk memverifikasi apakah itu adalah permintaan AJAX (misalnya, menggunakan
+      ``` javascript
+     request.headers.get('x-requested-with') == 'XMLHttpRequest').
+      ```
+   - Logika Bisnis, View memproses data yang diterima, berinteraksi dengan Model (basis data), dan melakukan operasi yang diperlukan (misalnya, menyimpan data, atau mengambil data baru).
+5. Membuat Respons, Setelah pemrosesan selesai, View membuat objek Response yang berisi hasil. Untuk AJAX, Django biasanya mengembalikan JsonResponse (berisi data yang diserialisasi dalam format JSON) atau, kadang-kadang, sebagian kecil HTML yang dirender (render()).
+
+### Sisi Klien
+1. Penerimaan Respons, Browser menerima respons dari server.
+2. Penanganan Callback, Kode JavaScript yang awalnya mengirim permintaan akan memanggil fungsi success atau then() (callback) untuk menangani data yang diterima.
+3. Pembaruan DOM, JavaScript menggunakan data respons (misalnya, data JSON) untuk memperbarui sebagian kecil dari DOM (tampilan halaman) tanpa memuat ulang seluruh halaman web, sehingga menghasilkan pengalaman pengguna yang mulus dan cepat.
+
+## Keunggulan AJAX dibandingkan reader📈
+Keuntungan utama menggunakan AJAX dibandingkan dengan render (penyajian) biasa di Django adalah peningkatan signifikan pada kecepatan dan responsivitas aplikasi, yang menghasilkan Pengalaman Pengguna (User Experience atau UX) yang jauh lebih baik.
+
+## Memastikan keamanan saat menggunakan AJAX untuk login dan register🔐
+Keamanan dipastikan melalui beberapa lapisan perlindungan:
+1. CSRF Protection, Wajib menyertakan CSRF Token (di header atau data) pada setiap permintaan POST/PUT/DELETE AJAX agar Middleware Django dapat memvalidasinya.
+2. Gunakan HTTPS Wajib, Seluruh komunikasi (termasuk username dan password) harus dienkripsi menggunakan SSL/TLS untuk mencegah serangan penyadapan (MITM).
+3. Validasi Sisi Server, Selalu validasi data username, password, dan form secara ketat menggunakan Django Forms di sisi View (server).
+4. Rate Limiting, Menerapkan batasan jumlah permintaan Login atau Register per IP dalam jangka waktu tertentu untuk melindungi dari serangan brute-force.
+5. JsonResponse dan Sanitasi, Mengembalikan data sebagai JSON dan memastikan output data (jika ada) di-sanitasi untuk mencegah serangan XSS (Cross-Site Scripting).
+
+## Pengaruh AJAX ke User Experince🤩
+AJAX secara fundamental meningkatkan UX dengan membuat website terasa lebih seperti aplikasi modern:
+1. Responsivitas Instan, Pengguna mendapatkan pembaruan konten yang cepat tanpa full page reload atau flicker (kedipan), menciptakan pengalaman yang mulus.
+2. Alur Kerja Tidak Terganggu, Pengguna dapat terus berinteraksi dengan halaman (misalnya, scrolling) saat permintaan data diproses di latar belakang.
+3. Feedback Cepat, Memungkinkan website memberikan feedback langsung (ikon loading, pesan sukses) setelah interaksi, mengurangi kebingungan dan frustrasi pengguna.
+4. Fitur Dinamis, Mendukung fitur modern seperti live search, infinite scrolling, dan validasi formulir real-time.
+</details>
+
